@@ -1,0 +1,120 @@
+/* Bootstrap 5 via CSS import (no PHP edits needed) */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css");
+
+/* ===== Base (keep your colors; enhance defaults) ===== */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,sans-serif;
+  margin:0;background:#0b0e14;color:#e6e6e6;
+}
+
+/* Header & nav already exist in your pages */
+header{
+  background:#121826;border-bottom:1px solid #20293a;padding:16px;
+}
+h1{margin:0 0 8px 0}
+nav a{color:#e6e6e6;text-decoration:none;margin-right:12px;padding:6px 10px;border-radius:8px}
+nav a:hover{background:#20293a}
+main{padding:16px}
+
+/* ===== Tables (auto-bootstrapped look without editing PHP) ===== */
+table{
+  width:100%;border-collapse:collapse;margin:12px 0;background:#111827;
+  /* Bootstrap table vibes */
+  --bs-table-bg: #0f172a;
+  --bs-table-striped-bg: #111b2f;
+  --bs-table-striped-color: #e5e7eb;
+  --bs-table-hover-bg: #14213d;
+  --bs-table-hover-color: #fff;
+  color:#e5e7eb;border-color:#22314f;
+}
+tr:nth-child(even){background:var(--bs-table-striped-bg)}
+tr:hover{background:var(--bs-table-hover-bg)}
+th,td{border:1px solid #374151;padding:10px 12px;text-align:left;vertical-align:middle}
+th{
+  background:#1f2937;color:#cbd5e1;position:sticky;top:0;z-index:1;
+  text-transform:uppercase;font-size:.85rem;letter-spacing:.03em;
+}
+td .actions a,.actions a{margin-right:8px}
+
+/* ===== Forms ===== */
+input,select,button,textarea{
+  background:#0b1220;color:#e6e6e6;border:1px solid #334155;border-radius:10px;padding:10px 12px;
+  outline: none;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:#3b82f6; box-shadow: 0 0 0 .2rem rgba(59,130,246,.2);
+}
+button{cursor:pointer}
+.form-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+
+/* Give default buttons a nicer style */
+button, .btn, [type=submit]{
+  background:#2563eb; border:1px solid #1d4ed8; color:#fff; border-radius:10px; padding:10px 16px;
+}
+button:hover, .btn:hover, [type=submit]:hover{ filter:brightness(1.05) }
+button:disabled, .btn:disabled{ opacity:.6; cursor:not-allowed; }
+
+/* Secondary buttons styled from anchors commonly used in PHP pages */
+a.button, a.btn, .btn-light, .btn-secondary{
+  background:#1f2937; color:#e5e7eb; border:1px solid #374151;
+}
+a.button:hover, .btn-light:hover, .btn-secondary:hover{ background:#263243; color:#fff; }
+
+/* ===== Cards ===== */
+.card{background:#111827;border:1px solid #20293a;border-radius:14px;padding:16px;margin:12px 0;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+
+/* ===== Badges & status chips ===== */
+.badge{display:inline-block;padding:4px 10px;border-radius:999px;background:#1f2937;border:1px solid #374151;font-weight:600}
+.success{color:#34d399}.danger{color:#f87171}.warning{color:#fbbf24}
+.badge-soft-success{background:rgba(34,197,94,.15);color:#34d399}
+.badge-soft-danger{background:rgba(239,68,68,.15);color:#f87171}
+.badge-soft-warning{background:rgba(245,158,11,.15);color:#fbbf24}
+
+/* ===== Utilities (no HTML changes required) ===== */
+.container-narrow{max-width:1100px;margin-inline:auto}
+.table-responsive{overflow-x:auto}
+.text-end{text-align:right}
+.text-center{text-align:center}
+.mt-2{margin-top:.5rem}.mt-3{margin-top:1rem}.mb-2{margin-bottom:.5rem}.mb-3{margin-bottom:1rem}
+.p-2{padding:.5rem}.p-3{padding:1rem}
+.rounded-12{border-radius:12px}
+
+/* ===== Buttons group often used as links ===== */
+.actions .btn, .actions a{
+  display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .75rem;
+  border-radius:10px;text-decoration:none;border:1px solid #374151;background:#1b2435;color:#e6e6e6;
+}
+.actions .btn:hover, .actions a:hover{ background:#24314a; color:#fff }
+
+/* ===== Receipts: better totals alignment ===== */
+.totals{max-width:420px;margin-left:auto}
+.totals table td{border:0 !important;padding:6px 0}
+.totals .label{color:#cbd5e1}
+.totals .value{text-align:right;font-weight:700}
+
+/* ===== Alerts (if you echo messages in pages) ===== */
+.alert-success{
+  background:rgba(34,197,94,.12); border:1px solid rgba(34,197,94,.35); color:#a7f3d0;
+  padding:12px 14px; border-radius:12px;
+}
+.alert-danger{
+  background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.35); color:#fecaca;
+  padding:12px 14px; border-radius:12px;
+}
+
+/* ===== Responsive tweaks for tables/forms without changing HTML ===== */
+@media (max-width: 768px){
+  main{padding:12px}
+  table{font-size:.92rem}
+  th,td{padding:8px}
+  .form-row{flex-direction:column}
+}
+
+/* ===== Print styles for receipt ===== */
+@media print{
+  header, nav, .noprint{ display:none !important; }
+  body{ background:#fff; color:#000; }
+  table, th, td{ border:1px solid #000; }
+}

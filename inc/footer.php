@@ -1,0 +1,1 @@
+</main><footer><small>&copy; <?= date('Y') ?> Purchase & Sales Manager</small></footer></body></html>
