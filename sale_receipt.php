@@ -66,7 +66,7 @@ $receipt_no = 'INV-' . date('Ymd', strtotime($header['sale_date'])) . '-' . $hea
   </table>
   <?php if (!empty($header['note'])): ?>
   <div style="margin:10px 0; padding:10px; border:1px dashed #999; border-radius:8px; background:#fafafa;">
-    <strong>تێبینی:</strong>
+    <strong>Note:</strong>
     <div><?= h($header['note']) ?></div>
   </div>
 <?php endif; ?>
