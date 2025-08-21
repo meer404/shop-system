@@ -1,3 +1,4 @@
+<?php $page = 'receipts.php'; require_once __DIR__ . '/header.php'; ?>
 <?php
 require __DIR__.'/inc/config.php';
 $page_title = "All Receipts";
@@ -84,3 +85,4 @@ require __DIR__.'/inc/header.php';
 </div>
 
 <?php require __DIR__.'/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

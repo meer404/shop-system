@@ -1,3 +1,4 @@
+<?php $page = 'receipt_edit_items.php'; require_once __DIR__ . '/header.php'; ?>
 <?php
 // receipt_edit_items.php — Full editor for a SALE receipt: header + items
 require __DIR__ . '/inc/config.php';
@@ -356,3 +357,4 @@ document.addEventListener('DOMContentLoaded', recalc);
 </script>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

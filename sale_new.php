@@ -1,3 +1,4 @@
+<?php $page = 'sale_new.php'; require_once __DIR__ . '/header.php'; ?>
 <?php
 require __DIR__.'/inc/config.php'; $page_title="New Sale"; $msg=null; $last_sale_id=null;
 $customers=$pdo->query("SELECT id,name FROM customers ORDER BY name")->fetchAll();
@@ -139,3 +140,4 @@ document.addEventListener('DOMContentLoaded', recalc);
 </div>
 
 <?php require __DIR__.'/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

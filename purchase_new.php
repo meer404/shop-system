@@ -1,3 +1,4 @@
+<?php $page = 'purchase_new.php'; require_once __DIR__ . '/header.php'; ?>
 <?php
 require __DIR__.'/inc/config.php';
 $page_title = "New Purchase";
@@ -124,3 +125,4 @@ function updateRow(sel){
 }
 </script>
 <?php require __DIR__.'/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

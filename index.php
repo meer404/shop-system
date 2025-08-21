@@ -1,3 +1,4 @@
+<?php $page = 'index.php'; require_once __DIR__ . '/header.php'; ?>
 <?php
 require __DIR__.'/inc/config.php'; $page_title="Dashboard"; require __DIR__.'/inc/header.php';
 $total_customers = $pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn();

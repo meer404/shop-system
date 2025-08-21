@@ -1,3 +1,4 @@
+<?php $page = 'customers.php'; require_once __DIR__ . '/header.php'; ?>
 <?php
 require __DIR__.'/inc/config.php'; $page_title="Customers"; $msg=null;
 if ($_SERVER['REQUEST_METHOD']==='POST'){
@@ -34,3 +35,4 @@ require __DIR__.'/inc/header.php'; ?>
   </tbody></table>
 </div>
 <?php require __DIR__.'/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>

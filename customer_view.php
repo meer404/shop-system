@@ -1,3 +1,4 @@
+<?php $page = 'customer_view.php'; require_once __DIR__ . '/header.php'; ?>
 <?php
 require __DIR__.'/inc/config.php';
 $id=isset($_GET['id'])?(int)$_GET['id']:0; if($id<=0) die("Invalid id");
@@ -45,3 +46,4 @@ $page_title="Customer View - ".$customer['name']; require __DIR__.'/inc/header.p
   </tbody></table>
 </div>
 <?php require __DIR__.'/inc/footer.php'; ?>
+<?php require_once __DIR__ . '/footer.php'; ?>
