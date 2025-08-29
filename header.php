@@ -24,7 +24,9 @@ function is_active($needle){ global $page; return (strpos($page, $needle) !== fa
       <a href="purchases.php"<?=is_active('purchases.php')?>><span>📥</span><b>Purchases</b></a>
       <a href="payments.php"<?=is_active('payments.php')?>><span>💰</span><b>Payments</b></a>
       <a href="receipts.php"<?=is_active('receipts.php')?>><span>🖨️</span><b>Receipts</b></a>
-      <a href="suppliers.php"<?=is_active('suppliers.php')?>><span>🏭</span><b>Suppliers</b></a>
-    </nav>
+    <a href="suppliers.php"<?=is_active('suppliers.php')?>><span>🏭</span><b>Suppliers</b></a>
+    <a class="nav-link d-flex align-items-center" href="stats.php"<?=is_active('stats.php')?>>📈 </span><b>stats</b></a>
+
+  </nav>
   </aside>
   <main class="content">
