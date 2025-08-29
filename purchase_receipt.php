@@ -1,84 +1,151 @@
 <?php
-require __DIR__.'/inc/config.php';
+require_once __DIR__ . '/inc/config.php';
+
+function findColumn(PDO $pdo, string $table, array $candidates): ?string {
+  $stmt = $pdo->prepare("DESCRIBE `$table`");
+  $stmt->execute();
+  $cols = array_map(fn($r) => strtolower($r['Field']), $stmt->fetchAll(PDO::FETCH_ASSOC));
+  foreach ($candidates as $c) {
+    if (in_array(strtolower($c), $cols, true)) return $c;
+  }
+  return null;
+}
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-if ($id <= 0) { die("Invalid purchase id"); }
+if ($id <= 0) { die('Invalid receipt ID'); }
 
-$h = $pdo->prepare("SELECT p.*, s.name AS supplier_name, s.phone
-                    FROM purchases p JOIN suppliers s ON s.id=p.supplier_id
-                    WHERE p.id=?");
-$h->execute([$id]);
-$header = $h->fetch();
-if (!$header) { die("Purchase not found"); }
+$dateCol = findColumn($pdo, 'purchases', ['date','created_at','purchase_date','bought_at','createdon','created_on','datetime','timestamp']);
+$dateSelect = $dateCol ? "`p`.`$dateCol` AS purchase_date_col" : "NULL AS purchase_date_col";
 
-$it = $pdo->prepare("SELECT pi.*, pr.name AS product_name
-                     FROM purchase_items pi
-                     JOIN products pr ON pr.id=pi.product_id
-                     WHERE pi.purchase_id=?");
-$it->execute([$id]);
-$items = $it->fetchAll();
+$hasSubtotal = findColumn($pdo, 'purchases', ['subtotal']) !== null;
+$hasDiscount = findColumn($pdo, 'purchases', ['discount']) !== null;
+$hasTax      = findColumn($pdo, 'purchases', ['tax']) !== null;
+$hasTotal    = findColumn($pdo, 'purchases', ['total']) !== null;
 
-$subtotal = (float)$header['subtotal'];
-$paid = (float)$header['paid'];
-$due = max(0, $subtotal - $paid);
-$receipt_no = 'INV-PUR-' . date('Ymd', strtotime($header['purchase_date'])) . '-' . $header['id'];
+$selects = [
+  "p.id",
+  $dateSelect,
+  $hasTotal    ? "p.total"    : "NULL AS total",
+  $hasSubtotal ? "p.subtotal" : "NULL AS subtotal",
+  $hasDiscount ? "p.discount" : "0 AS discount",
+  $hasTax      ? "p.tax"      : "0 AS tax",
+  "p.supplier_id",
+  "s.name AS supplier_name",
+  "s.phone AS supplier_phone"
+];
+
+$sql = "SELECT " . implode(", ", $selects) . "
+        FROM `purchases` p
+        LEFT JOIN `suppliers` s ON s.id = p.supplier_id
+        WHERE p.id = ?";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute([$id]);
+$pur = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$pur) { die('Receipt not found'); }
+
+$items = $pdo->prepare("
+  SELECT pi.product_id, pi.qty, pi.price,
+         COALESCE(pr.name, CONCAT('Product #', pi.product_id)) AS product_name
+  FROM purchase_items pi
+  LEFT JOIN products pr ON pr.id = pi.product_id
+  WHERE pi.purchase_id = ?
+");
+$items->execute([$id]);
+$rows = $items->fetchAll(PDO::FETCH_ASSOC);
+
+$computedSubtotal = 0.0;
+foreach ($rows as $r) { $computedSubtotal += (float)$r['qty'] * (float)$r['price']; }
+
+$subtotal = is_null($pur['subtotal']) ? $computedSubtotal : (float)$pur['subtotal'];
+$discount = isset($pur['discount']) ? (float)$pur['discount'] : 0.0;
+$tax      = isset($pur['tax']) ? (float)$pur['tax'] : 0.0;
+$total    = isset($pur['total']) && $pur['total'] > 0 ? (float)$pur['total'] : max(0, $subtotal - $discount + $tax);
+
+$rawDate = $pur['purchase_date_col'] ?? null;
+$invDate = $rawDate ? date('Ymd', strtotime($rawDate)) : date('Ymd');
+$invNo   = 'PUR-' . $invDate . '-' . $pur['id'];
+
+$displayDate = $rawDate ? date('Y-m-d H:i', strtotime($rawDate)) : '—';
+
+// Show overall Paid vs Credit from sales here as well, per your request
+$summaryStmt = $pdo->query("
+  SELECT 
+    SUM(CASE WHEN is_credit = 1 THEN 1 ELSE 0 END) AS credit_count,
+    SUM(CASE WHEN is_credit = 0 THEN 1 ELSE 0 END) AS paid_count
+  FROM sales
+");
+$summary = $summaryStmt->fetch(PDO::FETCH_ASSOC);
+$paidCount   = (int)($summary['paid_count'] ?? 0);
+$creditCount = (int)($summary['credit_count'] ?? 0);
 ?>
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Purchase Receipt <?= h($receipt_no) ?></title>
-<link rel="stylesheet" href="assets/styles.css">
-<style>
-.receipt{max-width:800px;margin:0 auto;background:#fff;color:#000;padding:16px;border:1px solid #ccc;border-radius:8px}
-.header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid #999;padding-bottom:8px;margin-bottom:12px}
-.header h2{margin:0}
-.meta small{display:block}
-.totals{margin-top:12px}
-.print-btn{margin:12px 0}
-@media print{ .noprint{ display:none!important; } body{ background:#fff; color:#000; } }
-</style>
+  <meta charset="utf-8">
+  <title>Purchase Receipt #<?= htmlspecialchars($invNo) ?></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="receipt.css">
 </head>
 <body>
-<div class="receipt">
-  <div class="header">
-    <div>
-      <h2>Purchase Receipt</h2>
-      <small>Receipt No: <strong><?= h($receipt_no) ?></strong></small>
-      <small>Date: <?= h($header['purchase_date']) ?></small>
+  <div class="receipt">
+    <div class="brand">
+      <h2>My Shop</h2>
+      <span class="badge">PURCHASE RECEIPT</span>
     </div>
+
     <div class="meta">
-      <small><strong>Supplier:</strong> <?= h($header['supplier_name']) ?></small>
-      <?php if(!empty($header['phone'])): ?><small><strong>Phone:</strong> <?= h($header['phone']) ?></small><?php endif; ?>
+      <div class="kv"><b>Receipt #:</b><span><?= htmlspecialchars($invNo) ?></span></div>
+      <div class="kv"><b>Date:</b><span><?= htmlspecialchars($displayDate) ?></span></div>
+    </div>
+    <div class="hr"></div>
+
+    <div class="block-title">Supplier</div>
+    <div class="meta">
+      <div class="kv"><b>Name:</b><span><?= htmlspecialchars($pur['supplier_name'] ?? '—') ?></span></div>
+      <div class="kv"><b>Phone:</b><span><?= htmlspecialchars($pur['supplier_phone'] ?? '—') ?></span></div>
+    </div>
+
+    <div class="block-title">Items</div>
+    <table class="table">
+      <thead>
+        <tr><th style="width:50%">Product</th><th>Qty</th><th>Cost</th><th>Subtotal</th></tr>
+      </thead>
+      <tbody>
+        <?php foreach ($rows as $it): $line = (float)$it['qty'] * (float)$it['price']; ?>
+        <tr>
+          <td><?= htmlspecialchars($it['product_name']) ?></td>
+          <td><?= (float)$it['qty'] ?></td>
+          <td><?= number_format((float)$it['price'], 2) ?></td>
+          <td><?= number_format($line, 2) ?></td>
+        </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <table class="table">
+        <tbody>
+          <tr><th>Subtotal</th><td style="text-align:right"><?= number_format($subtotal, 2) ?></td></tr>
+          <tr><th>Discount</th><td style="text-align:right">- <?= number_format($discount, 2) ?></td></tr>
+          <tr><th>Tax</th><td style="text-align:right"><?= number_format($tax, 2) ?></td></tr>
+          <tr><th>Total</th><td style="text-align:right"><strong><?= number_format($total, 2) ?></strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="hr"></div>
+    <div class="block-title">Overall Sales Summary</div>
+    <div class="meta">
+      <div class="kv"><b>Paid Sales:</b><span><?= $paidCount ?></span></div>
+      <div class="kv"><b>Credit Sales:</b><span><?= $creditCount ?></span></div>
+    </div>
+
+    <div class="note">Internal document for inventory and accounting.</div>
+
+    <div class="actions">
+      <button class="print-btn" onclick="window.print()">🖨 Print</button>
     </div>
   </div>
-
-  <table>
-    <thead><tr><th>#</th><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead>
-    <tbody>
-    <?php $i=1; foreach($items as $it): ?>
-      <tr>
-        <td><?= $i++ ?></td>
-        <td><?= h($it['product_name']) ?></td>
-        <td><?= (int)$it['qty'] ?></td>
-        <td>$<?= number_format((float)$it['price'],2) ?></td>
-        <td>$<?= number_format((float)$it['line_total'],2) ?></td>
-      </tr>
-    <?php endforeach; ?>
-    </tbody>
-  </table>
-
-  <div class="totals">
-    <p><strong>Subtotal:</strong> $<?= number_format($subtotal,2) ?></p>
-    <p><strong>Paid:</strong> $<?= number_format($paid,2) ?></p>
-    <p><strong>Balance:</strong> $<?= number_format($due,2) ?></p>
-  </div>
-
-  <div class="noprint">
-    <button class="print-btn" onclick="window.print()">🖨️ Print</button>
-    <a href="purchases.php">Back to purchases</a>
-  </div>
-</div>
 </body>
 </html>
