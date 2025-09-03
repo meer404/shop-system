@@ -2,7 +2,7 @@
 <?php
 require __DIR__.'/inc/config.php'; $page_title="New Sale"; $msg=null; $last_sale_id=null;
 $customers=$pdo->query("SELECT id,name FROM customers ORDER BY name")->fetchAll();
-$products=$pdo->query("SELECT id,name,price,stock FROM products ORDER BY name")->fetchAll();
+$products=$pdo->query("SELECT id,name,price,stock FROM products  where is_active= 1 ORDER BY name")->fetchAll();
 if($_SERVER['REQUEST_METHOD']==='POST'){
   $note = trim($_POST['note'] ?? '');
 
