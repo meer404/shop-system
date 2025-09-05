@@ -53,13 +53,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       // $insItem = $pdo->prepare("INSERT INTO purchase_items (purchase_id, product_id, qty, price, line_total) VALUES (?,?,?,?,?)");
 
       $updStock   = $pdo->prepare("UPDATE products SET stock = stock + ? WHERE id=?");
-      $insProduct = $pdo->prepare("INSERT INTO products (name, price, stock) VALUES (?,?,0)");
+      $insProduct = $pdo->prepare("INSERT INTO products (name, buy_price, price, stock) VALUES (?,?,?,0)");
+
 
       foreach ($items as $it) {
         $pid         = isset($it['product_id']) ? (int)$it['product_id'] : 0;
         $manual_name = trim($it['manual_name'] ?? '');
         $qty         = max(0, (int)($it['qty'] ?? 0));
         $price       = (float)($it['price'] ?? 0);
+        $sell_price = (float)($it['sell_price'] ?? 0);  // new sell_price
 
         if ($qty <= 0) continue;
 
@@ -75,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // Manual product: create it first
           // Ensure non-negative price
           if ($price < 0) $price = 0.00;
-          $insProduct->execute([$manual_name, $price]);
+          $insProduct->execute([$manual_name, $price, $sell_price]);
           $pid = (int)$pdo->lastInsertId();
         } else {
           // Invalid row (neither product selected nor manual name)
@@ -135,7 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <tr>
           <th style="width:110px">Type</th>
           <th>Product</th>
-          <th style="width:150px">Price</th>
+          <th style="width:150px">Buy Price</th>
+          <th style="width:150px">Sell Price</th>
           <th style="width:120px">Qty</th>
           <th style="width:140px">Line Total</th>
           <th style="width:70px"></th>
@@ -182,6 +185,9 @@ function addRow(){
     </td>
     <td>
       <input type="number" step="0.01" name="items[${idx}][price]" value="" oninput="recalcRow(${idx})" placeholder="0.00">
+    </td>
+    <td>
+      <input type="number" step="0.01" name="items[${idx}][sell_price]" value="" placeholder="Sell Price">
     </td>
     <td>
       <input type="number" step="1" min="1" name="items[${idx}][qty]" value="1" oninput="recalcRow(${idx})" required>

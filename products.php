@@ -15,12 +15,7 @@ $page_title = "Products";
 $msg = null;
 $err = null;
 
-// Ensure the table has a buy_price (purchase price) column
-try {
-  $pdo->exec("ALTER TABLE products ADD COLUMN buy_price DECIMAL(10,2) NULL DEFAULT 0");
-} catch (Throwable $e) {
-  // ignore if column already exists
-}
+
 
 $mode = isset($_POST['mode']) ? $_POST['mode'] : 'create';
 
