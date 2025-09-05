@@ -1,49 +1,50 @@
 <?php
 require_once __DIR__ . '/inc/config.php';
 
-/**
- * Robust Sale Receipt:
- * - Auto-detects date column
- * - Computes totals if missing
- * - Shows Total Paid for THIS receipt using multiple fallbacks:
- *   (1) payments.<sale-link-column> -> sum(amount) for this sale
- *   (2) sales.<paid-like-column>    -> use the column value
- *   (3) else 0.00
- */
 $saleId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-if ($saleId <= 0) {
-  die("Invalid sale id.");
-}
+if ($saleId <= 0) die("Invalid sale id.");
 
-// ---- Fetch sale row ----
+//
+// 1) Load core sale fields
+//
 $sale = null;
 $stmt = $pdo->prepare("
-  SELECT s.id, s.customer_id, s.is_credit, s.note
+  SELECT s.id, s.customer_id, s.is_credit, s.note,
+         /* try common date column; adjust below if you use another */
+         s.sale_date 
   FROM sales s
   WHERE s.id = ?
   LIMIT 1
 ");
 $stmt->execute([$saleId]);
 $sale = $stmt->fetch(PDO::FETCH_ASSOC);
+if (!$sale) die("Sale not found.");
 
-if (!$sale) {
-  die("Sale not found.");
+//
+// 2) Try to read sales.discount if the column exists
+//
+$discount = 0.0;
+try {
+  $q = $pdo->prepare("SELECT COALESCE(discount,0) FROM sales WHERE id = ?");
+  $q->execute([$saleId]);
+  $v = $q->fetchColumn();
+  if ($v !== false && $v !== null) $discount = (float)$v;
+} catch (Throwable $e) {
+  // Column doesn't exist yet; leave $discount = 0.0
 }
 
-// ---- Fetch customer ----
-$customer = [
-  'id' => $sale['customer_id'],
-  'name' => 'Walk-in',
-  'phone' => null,
-];
-$custStmt = $pdo->prepare("SELECT id, name, phone FROM customers WHERE id = ? LIMIT 1");
-$custStmt->execute([$sale['customer_id']]);
-if ($row = $custStmt->fetch(PDO::FETCH_ASSOC)) {
-  $customer = $row;
-}
+//
+// 3) Customer
+//
+$customer = ['id'=>$sale['customer_id'], 'name'=>'Walk-in', 'phone'=>null];
+$cst = $pdo->prepare("SELECT id,name,phone FROM customers WHERE id=? LIMIT 1");
+$cst->execute([$sale['customer_id']]);
+if ($r = $cst->fetch(PDO::FETCH_ASSOC)) $customer = $r;
 
-// ---- Fetch items & compute receipt totals ----
-$itemStmt = $pdo->prepare("
+//
+// 4) Items + subtotal
+//
+$it = $pdo->prepare("
   SELECT si.product_id, si.qty, si.price,
          (si.qty * si.price) AS subtotal,
          p.name AS product_name
@@ -52,45 +53,50 @@ $itemStmt = $pdo->prepare("
   WHERE si.sale_id = ?
   ORDER BY si.id ASC
 ");
-$itemStmt->execute([$saleId]);
-$items = $itemStmt->fetchAll(PDO::FETCH_ASSOC);
+$it->execute([$saleId]);
+$items = $it->fetchAll(PDO::FETCH_ASSOC);
 
 $subtotal = 0.0;
-foreach ($items as $it) {
-  $subtotal += (float)($it['subtotal'] ?? 0);
-}
+foreach ($items as $row) $subtotal += (float)($row['subtotal'] ?? 0);
 
-// Taxes/discounts if you have them (set to 0 by default)
-$discount = 0.0;
-$tax = 0.0;
-$total = $subtotal - $discount + $tax;
+//
+// 5) Totals
+//
+$tax = 0.0;                    // keep 0 unless you add tax
+$total = $subtotal - $discount;
+if ($total < 0) $total = 0.0;
 
-// ---- Amount paid for THIS sale (optional: payments.sale_id) ----
+//
+// 6) Paid for THIS sale (payments.sale_id -> SUM(amount)); fallback to sales.paid if present
+//
 $paidThisSale = 0.0;
 try {
-  $payStmt = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM payments WHERE sale_id = ?");
-  $payStmt->execute([$saleId]);
-  $paidThisSale = (float)$payStmt->fetchColumn();
-} catch (Throwable $e) {
-  // If payments table doesn't have sale_id, ignore and keep 0
-  $paidThisSale = 0.0;
-}
+  $ps = $pdo->prepare("SELECT COALESCE(SUM(amount),0) FROM payments WHERE sale_id = ?");
+  $ps->execute([$saleId]);
+  $paidThisSale = (float)$ps->fetchColumn();
+} catch (Throwable $e) { /* ignore */ }
 
+if ($paidThisSale <= 0) {
+  try {
+    $ps2 = $pdo->prepare("SELECT COALESCE(paid,0) FROM sales WHERE id = ?");
+    $ps2->execute([$saleId]);
+    $v = $ps2->fetchColumn();
+    if ($v !== false && $v !== null) $paidThisSale = (float)$v;
+  } catch (Throwable $e) { /* ignore */ }
+}
 $dueThisSale = max($total - $paidThisSale, 0.0);
 
-// ---- Customer overall balance (via view if exists; fallback compute) ----
+//
+// 7) Customer overall balance (view v_customer_balance if exists; else compute)
+//
 $customerBalance = 0.0;
 try {
-  $vStmt = $pdo->prepare("SELECT COALESCE(balance,0) FROM v_customer_balance WHERE customer_id = ?");
-  $vStmt->execute([$customer['id']]);
-  $val = $vStmt->fetchColumn();
-  if ($val !== false && $val !== null) {
-    $customerBalance = (float)$val;
-  }
+  $vb = $pdo->prepare("SELECT COALESCE(balance,0) FROM v_customer_balance WHERE customer_id = ?");
+  $vb->execute([$customer['id']]);
+  $val = $vb->fetchColumn();
+  if ($val !== false && $val !== null) $customerBalance = (float)$val;
 } catch (Throwable $e) {
-  // Fallback: credits - payments
-  // credit sum from sales where is_credit=1 minus all payments by this customer
-  $calcStmt = $pdo->prepare("
+  $calc = $pdo->prepare("
     SELECT
       COALESCE((
         SELECT SUM(si.qty * si.price)
@@ -103,16 +109,17 @@ try {
         SELECT SUM(p.amount) FROM payments p WHERE p.customer_id = ?
       ),0)
   ");
-  $calcStmt->execute([$customer['id'], $customer['id']]);
-  $customerBalance = (float)$calcStmt->fetchColumn();
+  $calc->execute([$customer['id'], $customer['id']]);
+  $customerBalance = (float)$calc->fetchColumn();
 }
 
-// ---- Receipt meta ----
-$createdAt = $sale['created_at'] ?? date('Y-m-d H:i:s');
+//
+// 8) Meta
+//
+$createdAt = $sale['created_at'] ?? date('Y-m-d H:i:s');   // adjust if your date column has a different name
 $invoiceNo = sprintf("INV-%s-%d", date('Ymd', strtotime($createdAt)), $saleId);
 $isCredit = !empty($sale['is_credit']) ? (int)$sale['is_credit'] : 0;
 $note = $sale['note'] ?? '';
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -207,10 +214,7 @@ $note = $sale['note'] ?? '';
                 <th>Discount</th>
                 <td class="right mono"><?= number_format((float)$discount, 2) ?></td>
               </tr>
-              <tr>
-                <th>Tax</th>
-                <td class="right mono"><?= number_format((float)$tax, 2) ?></td>
-              </tr>
+             
               <tr>
                 <th>Total</th>
                 <td class="right mono"><b><?= number_format((float)$total, 2) ?></b></td>
