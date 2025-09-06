@@ -4,6 +4,7 @@
 
 require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/inc/config.php';
+require_once __DIR__ . '/inc/auth.php';
 
 if (!function_exists('h')) {
   function h($s){ return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }

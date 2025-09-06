@@ -1,4 +1,4 @@
-<?php $page = 'receipt_edit.php'; require_once __DIR__ . '/header.php'; ?>
+<?php $page = 'receipt_edit.php'; require_once __DIR__ . '/header.php'; require_once __DIR__ . '/inc/auth.php'; ?>
 <?php
 // receipt_edit.php — Edit a single SALE receipt (paid, note, date)
 require __DIR__ . '/inc/config.php';

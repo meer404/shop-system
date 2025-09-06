@@ -2,6 +2,7 @@
 $page = 'sale_new.php'; 
 require_once __DIR__ . '/header.php'; 
 require __DIR__.'/inc/config.php'; 
+require_once __DIR__ . '/inc/auth.php';
 $page_title="New Sale"; 
 $msg=null; 
 $last_sale_id=null;

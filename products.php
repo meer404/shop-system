@@ -5,7 +5,7 @@ require_once __DIR__ . '/header.php';
 
 // CONFIG (expects $pdo PDO instance)
 require_once __DIR__ . '/inc/config.php';
-
+require_once __DIR__ . '/inc/auth.php';
 // Simple esc helper if not defined
 if (!function_exists('h')) {
   function h($s) { return htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8'); }

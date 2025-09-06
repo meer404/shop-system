@@ -1,6 +1,7 @@
 <?php $page = 'customer_view.php'; require_once __DIR__ . '/header.php'; ?>
 <?php
 require __DIR__.'/inc/config.php';
+require_once __DIR__ . '/inc/auth.php';
 $id=isset($_GET['id'])?(int)$_GET['id']:0; if($id<=0) die("Invalid id");
 $c=$pdo->prepare("SELECT * FROM customers WHERE id=?"); $c->execute([$id]); $customer=$c->fetch(); if(!$customer) die("Customer not found");
 $bal=$pdo->prepare("SELECT * FROM v_customer_balance WHERE customer_id=?"); $bal->execute([$id]); $balance=$bal->fetch();

@@ -52,3 +52,21 @@ button{cursor:pointer}
   table,th,td{border:1px solid #000}
   body{background:#fff;color:#000}
 }
+/* ---- bottom area in sidebar ---- */
+.sidebar { display:flex; flex-direction:column; } /* already set, safe to repeat */
+.sidebar-bottom { margin-top:auto; display:flex; flex-direction:column; gap:8px; }
+
+/* Match sidebar link layout, with a danger accent for logout */
+.logout-btn, .login-btn{
+  display:flex; align-items:center; gap:10px;
+  color:#e6e6e6; text-decoration:none; padding:9px 10px;
+  border-radius:10px; border:1px solid transparent;
+}
+.logout-btn{
+  background:#ef4444; border-color:#b91c1c; color:#fff;
+}
+.logout-btn:hover{ background:#dc2626; border-color:#991b1b; }
+.login-btn{
+  background:#1a2234; border-color:#32405b;
+}
+.login-btn:hover{ background:#20293a; border-color:#253049; }

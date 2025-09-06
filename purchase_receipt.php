@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/inc/config.php';
-
+require_once __DIR__ . '/inc/auth.php';
 function findColumn(PDO $pdo, string $table, array $candidates): ?string {
   $stmt = $pdo->prepare("DESCRIBE `$table`");
   $stmt->execute();
