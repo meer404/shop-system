@@ -30,6 +30,14 @@ if (session_status() === PHP_SESSION_NONE) session_start();
       <a href="suppliers.php"<?=is_active('suppliers.php')?>><span>🏭</span><b>دابینکەرەکان</b></a>
       <a href="purchase_new.php"<?=is_active('purchase_new.php')?>><span>🛒</span><b>Buy Items</b></a>
       <a href="stats.php"<?=is_active('stats.php')?>><span>📈</span><b>Stats</b></a>
+
+      <div class="dropdown lang-dropdown">
+      <a href="#" class="dropdown-toggle"><span>🌐</span><b>Language</b></a>
+      <div class="dropdown-menu">
+        <a href="../"><b>English</b></a>
+        <a href="./"><b>کوردی</b></a>
+      </div>
+    </div>
     </nav>
 
     <!-- bottom area (sticks to bottom thanks to flex) -->

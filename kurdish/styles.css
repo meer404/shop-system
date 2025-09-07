@@ -70,3 +70,21 @@ button{cursor:pointer}
   background:#1a2234; border-color:#32405b;
 }
 .login-btn:hover{ background:#20293a; border-color:#253049; }
+
+
+/* Language dropdown - minimal styles */
+.sidebar nav .dropdown { position: relative; margin-top: 4px; }
+.sidebar nav .dropdown .dropdown-toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 12px; border-radius: 12px; text-decoration: none;
+}
+.sidebar nav .dropdown .dropdown-menu {
+  display: none; position: relative; margin: 6px 0 0 28px;
+  flex-direction: column; gap: 6px;
+}
+.sidebar nav .dropdown.open .dropdown-menu { display: flex; }
+.sidebar nav .dropdown .dropdown-menu a {
+  padding: 6px 10px; border-radius: 10px; text-decoration: none;
+}
+/* Toggle behavior (JS-less hover fallback) */
+.sidebar nav .dropdown:hover .dropdown-menu { display: flex; }
