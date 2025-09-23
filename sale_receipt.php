@@ -123,124 +123,471 @@ $isCredit = !empty($sale['is_credit']) ? (int)$sale['is_credit'] : 0;
 $note = $sale['note'] ?? '';
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
   <title>Receipt #<?= htmlspecialchars($invoiceNo) ?></title>
-  <link rel="stylesheet" href="styles.css">
   <style>
-    .receipt{max-width:900px;margin:0 auto;background:#111827;border:1px solid #20293a;border-radius:12px;padding:18px}
-    .header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
-    .muted{opacity:.8}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .totals{max-width:360px;margin-left:auto}
-    .right{text-align:right}
-    .big{font-size:1.25rem}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-    .print-actions{display:flex;gap:8px;margin:14px 0}
-    @media print{ .print-actions{display:none} body{background:#fff;color:#000} }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, Tahoma, sans-serif;
+      background: #f9f7f4;
+      color: #000;
+      font-size: 14px;
+      line-height: 1.4;
+      padding: 20px;
+    }
+    
+    .receipt-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fffef9;
+      border: 2px solid #2c5282;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    
+    /* Header Section */
+    .header-section {
+      border-bottom: 2px solid #2c5282;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+      background: linear-gradient(to bottom, #e6f2ff, #f0f7ff);
+      padding: 15px;
+      border-radius: 4px 4px 0 0;
+      margin: -20px -20px 15px -20px;
+    }
+    
+    .company-header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    
+    .company-header h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #1a365d;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .company-info {
+      font-size: 12px;
+      line-height: 1.6;
+      color: #2c5282;
+    }
+    
+    /* Receipt Details */
+    .receipt-details {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      border: 1px solid #5a88b8;
+      background: #f0f7ff;
+      border-radius: 4px;
+    }
+    
+    .detail-group {
+      flex: 1;
+      padding: 10px;
+      border-right: 1px solid #5a88b8;
+    }
+    
+    .detail-group:last-child {
+      border-right: none;
+    }
+    
+    .detail-label {
+      font-weight: bold;
+      color: #1a365d;
+      display: inline-block;
+      margin-right: 5px;
+    }
+    
+    .detail-value {
+      color: #2c5282;
+      font-weight: 600;
+    }
+    
+    /* Customer Info */
+    .customer-section {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #5a88b8;
+      background: #fdfcfa;
+      border-radius: 4px;
+    }
+    
+    .customer-field {
+      flex: 1;
+    }
+    
+    /* Items Table */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      border: 1px solid #2c5282;
+      background: #fff;
+    }
+    
+    .items-table thead {
+      background: #ffd000ff;
+      color: black;
+    }
+    
+    .items-table th {
+      border: 1px solid #2c5282;
+      padding: 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 13px;
+    }
+    
+    .items-table td {
+      border: 1px solid #5a88b8;
+      padding: 6px 8px;
+      text-align: center;
+      background: #fff;
+    }
+    
+    .items-table tbody tr:nth-child(even) {
+      background: #f7fafc;
+    }
+    
+    .items-table .product-name {
+      text-align: left;
+    }
+    
+    .items-table .number-col {
+      text-align: right;
+      font-weight: 500;
+    }
+    
+    /* Totals Section */
+    .totals-section {
+      margin-bottom: 20px;
+    }
+    
+    .totals-grid {
+      display: flex;
+      gap: 20px;
+    }
+    
+    .totals-box {
+      flex: 1;
+      border: 1px solid #5a88b8;
+      padding: 15px;
+      background: linear-gradient(to bottom, #fef9e7, #fffef9);
+      border-radius: 4px;
+    }
+    
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #d4d4d8;
+    }
+    
+    .total-row:last-child {
+      border-bottom: none;
+      font-weight: bold;
+      font-size: 16px;
+      padding-top: 10px;
+      color: #1a365d;
+    }
+    
+    .total-label {
+      font-weight: bold;
+      color: #2c5282;
+    }
+    
+    .total-value {
+      text-align: right;
+      min-width: 100px;
+      color: #1a365d;
+      font-weight: 600;
+    }
+    
+    /* Note Section */
+    .note-section {
+      border: 1px solid #5a88b8;
+      padding: 10px;
+      margin-bottom: 20px;
+      background: #fef9e7;
+      min-height: 60px;
+      border-radius: 4px;
+    }
+    
+    .note-label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #1a365d;
+    }
+    
+    /* Footer Section */
+    .footer-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px solid #2c5282;
+      background: #f0f7ff;
+      margin: 30px -20px -20px -20px;
+      padding: 20px;
+    }
+    
+    .print-info {
+      text-align: center;
+      font-size: 11px;
+      color: #4a5568;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #cbd5e0;
+    }
+    
+    .signatures {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+    
+    .signature-box {
+      text-align: center;
+      min-width: 200px;
+    }
+    
+    .signature-line {
+      border-bottom: 2px solid #2c5282;
+      margin-bottom: 5px;
+      min-height: 40px;
+    }
+    
+    .signature-label {
+      font-size: 12px;
+      color: #1a365d;
+      font-weight: bold;
+    }
+    
+    /* Print Actions */
+    .print-actions {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    .print-actions button,
+    .print-actions a {
+      padding: 8px 16px;
+      margin: 0 5px;
+      background: #3182ce;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: bold;
+    }
+    
+    .print-actions button:hover,
+    .print-actions a:hover {
+      background: #2c5282;
+    }
+    
+    /* Print Styles */
+    @media print {
+      body {
+        padding: 0;
+        background: #fff;
+      }
+      
+      .receipt-wrapper {
+        border: 1px solid #000;
+        max-width: 100%;
+        box-shadow: none;
+      }
+      
+      .print-actions {
+        display: none;
+      }
+      
+      .items-table th,
+      .items-table td {
+        border: 1px solid #000;
+      }
+      
+      .header-section {
+        margin: -20px -20px 15px -20px;
+      }
+      
+      .footer-section {
+        margin: 30px -20px -20px -20px;
+      }
+    }
+    
+    /* Bilingual Support */
+    .bilingual {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .ar-text {
+      text-align: right;
+      font-family: Arial, Tahoma;
+    }
   </style>
 </head>
 <body>
-  <div class="content">
-    <div class="receipt">
-      <div class="header">
-        <div>
-          <h1>Sale Receipt</h1>
-          <div class="muted">Invoice: <b class="mono"><?= htmlspecialchars($invoiceNo) ?></b></div>
-          <div class="muted">Date: <b><?= htmlspecialchars(date('Y-m-d H:i', strtotime($createdAt))) ?></b></div>
+  <div class="receipt-wrapper">
+    <!-- Header -->
+    <div class="header-section">
+      <div class="company-header">
+        <h1>SALES RECEIPT</h1>
+        <div class="bilingual">
+           <img src="images/Logo.png" alt="Company Logo" style="max-width: 150px;">
+          <div class="company-info">
+            Your Company Name<br>
+            Address Line 1<br>
+            Phone: 07732828287 | Email: info@company.com
+          </div>
+         
         </div>
-        <div class="right">
-          <div class="big"><b><?= htmlspecialchars($customer['name'] ?? 'Walk-in') ?></b></div>
-          <?php if (!empty($customer['phone'])): ?>
-            <div class="muted"><?= htmlspecialchars($customer['phone']) ?></div>
-          <?php endif; ?>
-          <div class="muted">
-            Type:
-            <?php if ($isCredit): ?>
-              <span class="badge">Credit</span>
-            <?php else: ?>
-              <span class="badge">Cash</span>
-            <?php endif; ?>
+      </div>
+    </div>
+    
+    <!-- Receipt Details -->
+    <div class="receipt-details">
+      <div class="detail-group">
+        <span class="detail-label">Date:</span>
+        <span class="detail-value"><?= htmlspecialchars(date('d/m/Y', strtotime($createdAt))) ?></span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Receipt Type:</span>
+        <span class="detail-value"><?= $isCredit ? 'Credit' : 'Cash' ?></span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Receipt No:</span>
+        <span class="detail-value"><?= htmlspecialchars($saleId) ?></span>
+      </div>
+    </div>
+    
+    <!-- Customer Information -->
+    <div class="customer-section">
+      <div class="customer-field">
+        <span class="detail-label">Customer:</span>
+        <span class="detail-value"><?= htmlspecialchars($customer['name'] ?? 'Walk-in') ?></span>
+      </div>
+      <div class="customer-field">
+        <span class="detail-label">Phone:</span>
+        <span class="detail-value"><?= htmlspecialchars($customer['phone'] ?? '-') ?></span>
+      </div>
+      <div class="customer-field">
+        <span class="detail-label">Account Code:</span>
+        <span class="detail-value"><?= htmlspecialchars($customer['id']) ?></span>
+      </div>
+    </div>
+    
+    <!-- Items Table -->
+    <table class="items-table">
+      <thead>
+        <tr>
+          <th width="5%">#</th>
+          <th width="45%">Product Name</th>
+          <th width="15%">Qty</th>
+          <th width="15%">Price</th>
+          <th width="20%">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php if ($items): $i=1; foreach($items as $it): ?>
+        <tr>
+          <td><?= $i++ ?></td>
+          <td class="product-name"><?= htmlspecialchars($it['product_name'] ?? ('#'.$it['product_id'])) ?></td>
+          <td class="number-col"><?= number_format((float)$it['qty'], 2) ?></td>
+          <td class="number-col"><?= number_format((float)$it['price'], 2) ?></td>
+          <td class="number-col"><?= number_format((float)$it['subtotal'], 2) ?></td>
+        </tr>
+        <?php endforeach; else: ?>
+        <tr>
+          <td colspan="5">No items</td>
+        </tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+    
+    <!-- Totals Section -->
+    <div class="totals-section">
+      <div class="totals-grid">
+        <div class="totals-box">
+          <div class="total-row">
+            <span class="total-label">Subtotal:</span>
+            <span class="total-value">$<?= number_format((float)$subtotal, 2) ?></span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Discount:</span>
+            <span class="total-value">$<?= number_format((float)$discount, 2) ?></span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Total:</span>
+            <span class="total-value">$<?= number_format((float)$total, 2) ?></span>
+          </div>
+        </div>
+        
+        <div class="totals-box">
+          <div class="total-row">
+            <span class="total-label">Paid Amount:</span>
+            <span class="total-value">$<?= number_format((float)$paidThisSale, 2) ?></span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Due Amount:</span>
+            <span class="total-value">$<?= number_format((float)$dueThisSale, 2) ?></span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Customer Balance:</span>
+            <span class="total-value">$<?= number_format((float)$customerBalance, 2) ?></span>
           </div>
         </div>
       </div>
-
-      <?php if ($note !== ''): ?>
-        <div class="card"><b>Note:</b> <?= nl2br(htmlspecialchars($note)) ?></div>
-      <?php endif; ?>
-
-      <div class="card">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Product</th>
-              <th class="right">Qty</th>
-              <th class="right">Price</th>
-              <th class="right">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php if ($items): $i=1; foreach($items as $it): ?>
-            <tr>
-              <td><?= $i++ ?></td>
-              <td><?= htmlspecialchars($it['product_name'] ?? ('#'.$it['product_id'])) ?></td>
-              <td class="right"><?= number_format((float)$it['qty'], 2) ?></td>
-              <td class="right"><?= number_format((float)$it['price'], 2) ?></td>
-              <td class="right"><?= number_format((float)$it['subtotal'], 2) ?></td>
-            </tr>
-          <?php endforeach; else: ?>
-            <tr><td colspan="5">No items</td></tr>
-          <?php endif; ?>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="grid">
-        <div class="card">
-          <h3>Customer Balance</h3>
-          <p class="muted">Overall balance for this customer (credits − payments):</p>
-          <p class="big mono"><?= number_format((float)$customerBalance, 2) ?></p>
-        </div>
-
-        <div class="card totals">
-          <table>
-            <tbody>
-              <tr>
-                <th>Subtotal</th>
-                <td class="right mono"><?= number_format((float)$subtotal, 2) ?></td>
-              </tr>
-              <tr>
-                <th>Discount</th>
-                <td class="right mono"><?= number_format((float)$discount, 2) ?></td>
-              </tr>
-             
-              <tr>
-                <th>Total</th>
-                <td class="right mono"><b><?= number_format((float)$total, 2) ?></b></td>
-              </tr>
-              <tr>
-                <th>Paid (this sale)</th>
-                <td class="right mono"><?= number_format((float)$paidThisSale, 2) ?></td>
-              </tr>
-              <tr>
-                <th>Due (this sale)</th>
-                <td class="right mono"><b><?= number_format((float)$dueThisSale, 2) ?></b></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="print-actions">
-        <button onclick="window.print()">🖨️ Print</button>
-        <a href="receipts.php" class="badge">← All receipts</a>
-        <a href="index.php" class="badge">🏠 Dashboard</a>
-      </div>
-
-      <div class="muted">Thank you for your purchase.</div>
     </div>
+    
+    <!-- Note Section -->
+    <?php if ($note !== ''): ?>
+    <div class="note-section">
+      <div class="note-label">Note:</div>
+      <div><?= nl2br(htmlspecialchars($note)) ?></div>
+    </div>
+    <?php endif; ?>
+    
+    <!-- Footer Section -->
+    <div class="footer-section">
+      <div class="print-info">
+        Page 1 of 1 | Time <?= date('d/m/Y h:i:s A') ?> | Print By: Admin
+      </div>
+      
+      <div class="signatures">
+        <div class="signature-box">
+          <div class="signature-line"></div>
+          <div class="signature-label">Accountant</div>
+        </div>
+        <div class="signature-box">
+          <div class="signature-line"></div>
+          <div class="signature-label">Customer Signature</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Print Actions - Outside the receipt wrapper -->
+  <div class="print-actions">
+    <button onclick="window.print()">Print Receipt</button>
+    <a href="receipts.php">All Receipts</a>
+    <a href="index.php">Dashboard</a>
   </div>
 </body>
 </html>
