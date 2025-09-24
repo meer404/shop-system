@@ -17,7 +17,10 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <body>
 <div class="app">
   <aside class="sidebar">
-    <h2 class="logo">📊 Manager</h2>
+     <h2 class="logo">
+      <img src="images/logo.png" alt="Logo" style="width: 60px; height: 60px; vertical-align: middle;">
+      Control Board
+    </h2>
 
     <nav>
       <a href="index.php"<?=is_active('index.php')?>><span>🏠</span><b>Dashboard</b></a>

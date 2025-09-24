@@ -1,6 +1,7 @@
 <?php
-require_once '../inc/config.php'; 
-require_once '../inc/auth.php';  
+require_once __DIR__ . '/header.php'; 
+require __DIR__.'/inc/config.php'; 
+require_once __DIR__ . '/inc/auth.php';
 
 if (!isset($pdo) || !($pdo instanceof PDO)) {
     die("<b>DB error:</b> config.php should set <code>\$pdo = new PDO(...)</code>");
