@@ -448,13 +448,14 @@ $note = $sale['note'] ?? '';
     <!-- Header -->
     <div class="header-section">
       <div class="company-header">
-        <h1>SALES RECEIPT</h1>
+        <h1>پسوڵەی فرۆشتن</h1>
         <div class="bilingual">
            <img src="images/Logo.png" alt="Company Logo" style="max-width: 150px;">
           <div class="company-info">
-            Your Company Name<br>
-            Address Line 1<br>
-            Phone: 07732828287 | Email: info@company.com
+            Control Board<br>
+            سلێمانی - چوارباخ خوار فولکەی مامە ڕیشە<br>
+            Phone: 07732828287 - 00722142666 <br>
+             Email: jumaarasoul3@gmail.com
           </div>
          
         </div>
