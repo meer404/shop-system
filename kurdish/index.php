@@ -8,7 +8,7 @@ $total_payments  = $pdo->query("SELECT COALESCE(SUM(amount),0) FROM payments")->
 $balances = $pdo->query("SELECT * FROM v_customer_balance ORDER BY balance DESC")->fetchAll();
 ?>
 <div class="card">
-  <h2>تێڕوانینێکی گشتی</h2>
+  <h2> گشتی</h2>
   <div class="form-row">
     <span class="badge">كڕیاران: <?= (int)$total_customers ?></span>
     <span class="badge">کالاكان: <?= (int)$total_products ?></span>
@@ -18,7 +18,7 @@ $balances = $pdo->query("SELECT * FROM v_customer_balance ORDER BY balance DESC"
 </div>
 <div class="card">
   <h3>كڕیارەکان</h3>
-  <table><thead><tr><th>كڕیار</th><th>کۆی گشتی کڕین</th><th>کۆی گشتی پارەدراو</th><th>ماوە/قەرز</th><th>کردارەکان</th></tr></thead><tbody>
+  <table><thead><tr><th>كڕیار</th><th>کۆی گشتی کڕین</th><th>کۆی گشتی پارەی دراو</th><th>قەرز</th><th>کردارەکان</th></tr></thead><tbody>
   <?php foreach($balances as $b): ?>
     <tr>
       <td><?= h($b['name']) ?></td>

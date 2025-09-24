@@ -90,7 +90,7 @@ require '../inc/header.php';
     <table id="itemsTbl">
       <thead>
         <tr>
-          <th>Product</th><th>Price</th><th>بڕی کاڵا</th><th>Qty</th><th>کۆی پارە</th><th></th>
+          <th>Product</th><th>Price</th><th> بڕی کالای ماوە لە گۆگا</th><th>بڕی کاڵا</th><th>کۆی پارە</th><th></th>
         </tr>
       </thead>
       <tbody></tbody>

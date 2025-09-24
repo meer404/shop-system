@@ -1,1 +1,2 @@
-</main><footer><small>&copy; <?= date('Y') ?> Purchase & Sales Manager</small></footer></body></html>
+</main><footer><small>&copy; <?= date('Y') ?> Control Board-- 
+Design and Developed by <a href="https://mir.codes" target="_blank">mir.codes</a></small></footer></body></html>

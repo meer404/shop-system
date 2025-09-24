@@ -40,7 +40,7 @@ require '../inc/header.php';
     </select>
     <input type="date" name="date_from" value="<?= h($date_from) ?>">
     <input type="date" name="date_to" value="<?= h($date_to) ?>">
-    <label><input type="checkbox" name="credit_only" value="1" <?= $credit_only?'checked':'' ?>> Credit only</label>
+    <label><input type="checkbox" name="credit_only" value="1" <?= $credit_only?'checked':'' ?>> تەنها وەسڵی قەرز</label>
     <button type="submit">Filter</button>
     <a class="noprint" href="receipts.php">Reset</a>
   </form>
@@ -51,10 +51,10 @@ require '../inc/header.php';
     <thead>
       <tr>
         <th>ژمارەی وەسڵ</th>
-        <th>Date</th>
+        <th>بەروار</th>
         <th>Customer</th>
-        <th>Subtotal</th>
-        <th>Paid</th>
+        <th>کۆی گشتی</th>
+        <th>بڕی پارەی دراو</th>
         <th>قەرز</th>
         <th>Actions</th>
       </tr>

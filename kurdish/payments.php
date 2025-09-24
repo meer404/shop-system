@@ -18,7 +18,7 @@ if($customer_id_filter>0){
 }
 require '../inc/header.php'; ?>
 <div class="card">
-  <h2>Add پارەدان</h2>
+  <h2> پارەدان</h2>
   <?php if($msg): ?><p class="success"><?= h($msg) ?></p><?php endif; ?>
   <form method="post" action="payments.php">
     <div class="form-row">

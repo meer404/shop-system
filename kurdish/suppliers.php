@@ -20,12 +20,12 @@ $rows = $pdo->query("SELECT * FROM suppliers ORDER BY created_at DESC, id DESC")
 require '../inc/header.php';
 ?>
 <div class="card">
-  <h2>Add Supplier</h2>
+  <h2>زیادکردنی فرۆشیار</h2>
   <?php if ($msg): ?><p class="success"><?= h($msg) ?></p><?php endif; ?>
   <form method="post" action="suppliers.php">
     <div class="form-row">
-      <input name="name" placeholder="Supplier name" required>
-      <input name="phone" placeholder="Phone (optional)">
+      <input name="name" placeholder="ناوی فرۆشیار" required>
+      <input name="phone" placeholder="ژمارە مۆبایل	">
       <button type="submit">Save</button>
     </div>
   </form>

@@ -36,10 +36,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="ku">
 <head>
   <meta charset="utf-8">
-  <title>Login</title>
+  <title>چوونەژورەوە</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="styles.css">
   <style>
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body class="app">
   <div class="content login-wrap">
     <div class="card login-card">
-      <h1>Sign in</h1>
+      <h1>چوونەژورەوە</h1>
       <?php if ($error): ?>
         <p class="danger"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></p>
       <?php endif; ?>

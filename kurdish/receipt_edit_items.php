@@ -1,7 +1,7 @@
-<?php $page = 'receipt_edit_items.php'; require_once __DIR__ . '/header.php'; require_once __DIR__ . '/inc/auth.php';?>
+<?php $page = 'receipt_edit_items.php'; require 'header.php'; require_once  '../inc/auth.php';?>
 <?php
 // receipt_edit_items.php — Full editor for a SALE receipt: header + items
-require __DIR__ . '/inc/config.php';
+require '../inc/config.php';
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) { die("Invalid receipt id"); }
@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'save_
 }
 
 $page_title = "Edit Receipt & Items #".$sale['id']." — ".$sale['customer_name'];
-require __DIR__ . '/inc/header.php';
+
 
 // helper for select options
 function product_options($products, $selected_id = 0) {
@@ -225,7 +225,7 @@ function product_options($products, $selected_id = 0) {
 }
 ?>
 <div class="card">
-  <h2>Edit Receipt & Items</h2>
+  <h2>دەستکاری کردنی وەسڵ</h2>
   <?php if ($msg): ?><p class="success"><?= h($msg) ?></p><?php endif; ?>
   <?php if ($err): ?><p class="danger"><?= h($err) ?></p><?php endif; ?>
 
@@ -238,15 +238,15 @@ function product_options($products, $selected_id = 0) {
         <input value="<?= h($sale['customer_name']) ?>" disabled>
       </div>
       <div style="display:flex;flex-direction:column;max-width:160px">
-        <label>Subtotal</label>
+        <label>کۆی گشتی</label>
         <input id="subtotal" value="<?= number_format((float)$sale['subtotal'],2) ?>" disabled>
       </div>
       <div style="display:flex;flex-direction:column;max-width:160px">
-        <label>Paid</label>
+        <label>بڕی پارەی دراو</label>
         <input type="number" step="0.01" name="paid" value="<?= h($sale['paid']) ?>">
       </div>
       <div style="display:flex;flex-direction:column;max-width:200px">
-        <label>Sale date</label>
+        <label>بەرواری وەسڵ </label>
         <input type="text" name="sale_date" placeholder="YYYY-MM-DD or YYYY-MM-DD HH:MM:SS" value="<?= h($sale['sale_date']) ?>">
       </div>
       <div style="display:flex;flex-direction:column;min-width:300px;flex:1">
@@ -256,11 +256,11 @@ function product_options($products, $selected_id = 0) {
     </div>
 
     <div class="card" style="margin-top:12px">
-      <h3>Items</h3>
+      <h3>کاڵاکان</h3>
       <table id="itemsTbl">
         <thead>
           <tr>
-            <th>Product</th><th>Price</th><th>Stock</th><th>Qty</th><th>Line Total</th><th></th>
+            <th>Product</th><th>Price</th><th>بڕی کالای ماوە لە گۆگا	</th><th>بڕی کاڵا</th><th>کۆی گشتی </th><th></th>
           </tr>
         </thead>
         <tbody>
@@ -275,21 +275,21 @@ function product_options($products, $selected_id = 0) {
             <td class="stock"><?= h($prod_map[(int)$it['product_id']]['stock'] ?? 0) ?></td>
             <td><input type="number" name="items[<?= (int)$it['id'] ?>][qty]" value="<?= (int)$it['qty'] ?>" min="1" oninput="recalc()"></td>
             <td class="lineTotal">$<?= number_format((float)$it['line_total'],2) ?></td>
-            <td><button type="button" onclick="removeRow(this)">Remove</button></td>
+            <td><button type="button" onclick="if(confirm('دڵنیایت لە سڕینەوە؟')) { removeRow(this); }">سڕینەوە</button></td>
           </tr>
           <?php endforeach; ?>
         </tbody>
       </table>
 
       <div class="form-row" style="margin-top:8px">
-        <button type="button" onclick="addRow()">+ Add Item</button>
+        <button type="button" onclick="addRow()">زیادکردنی کاڵا</button>
       </div>
     </div>
 
     <div class="form-row" style="justify-content:flex-start;gap:10px">
-      <button type="submit">Save All</button>
-      <a class="badge" href="sale_receipt.php?id=<?= (int)$sale['id'] ?>">View receipt</a>
-      <a class="badge" href="receipts.php">Back to receipts</a>
+      <button type="submit">سەیڤکردن </button>
+      <a class="badge" href="sale_receipt.php?id=<?= (int)$sale['id'] ?>">بینینی وەسڵ </a>
+      <a class="badge" href="receipts.php">گەڕانەوە بۆ بەشی وەسڵەکان  </a>
     </div>
   </form>
 </div>
@@ -356,7 +356,6 @@ function recalc(){
 document.addEventListener('DOMContentLoaded', recalc);
 </script>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
-<?php require_once __DIR__ . '/footer.php'; ?>
+
 
 <script src="kurdish-ui.js?v=1"></script>

@@ -16,7 +16,7 @@ require '../inc/header.php'; ?>
   <form method="post" action="customers.php">
     <div class="form-row">
       <input name="name" placeholder="ناوی کڕیار" required>
-      <input name="phone" placeholder="Phone (optional)">
+      <input name="phone" placeholder="ژمارە مۆبایل	">
       <button type="submit">سەیڤکردن</button>
     </div>
   </form>

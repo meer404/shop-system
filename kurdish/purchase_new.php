@@ -111,9 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <form method="post" action="purchase_new.php" id="purchaseForm" autocomplete="off">
     <div class="form-row">
       <label for="supplier_id" style="display:flex;align-items:center;gap:6px">
-        دابینکەر:
+        فرۆشیار:
         <select id="supplier_id" name="supplier_id" required>
-          <option value="">-- Select --</option>
+          <option value="">-- دیاری کردن --</option>
           <?php foreach ($suppliers as $s): ?>
             <option value="<?= (int)$s['id'] ?>"><?= h($s['name']) ?></option>
           <?php endforeach; ?>
@@ -121,15 +121,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       </label>
 
       <label for="paid" style="display:flex;align-items:center;gap:6px">
-        پارەدراو now:
+        بڕی پارەی دراو:
         <input id="paid" type="number" step="0.01" name="paid" value="0">
       </label>
 
       <button type="button" onclick="addRow()" title="Add item">+ زیادکردنی کاڵا</button>
-      <button type="submit">خەزنە کڕین</button>
+      <button type="submit"> سەیڤکردن</button>
 
       <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
-        <b>کۆی بۆماوە: <span id="subtotal">0.00</span></b>
+        <b> کۆی گشتی: <span id="subtotal">0.00</span></b>
       </div>
     </div>
 
@@ -138,17 +138,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <tr>
           <th style="width:110px">Type</th>
           <th>کالا</th>
-          <th style="width:150px">Buy نرخ</th>
-          <th style="width:150px">Sell نرخ</th>
-          <th style="width:120px">ژمارە</th>
-          <th style="width:140px">Line کۆی گشتی</th>
+          <th style="width:150px">نرخی کڕین</th>
+          <th style="width:150px">نرخی فرۆشتن</th>
+          <th style="width:120px">بڕ</th>
+          <th style="width:140px"> کۆی گشتی</th>
           <th style="width:70px"></th>
         </tr>
       </thead>
       <tbody></tbody>
       <tfoot>
         <tr>
-          <th colspan="4" style="text-align:right">کۆی بۆماوە</th>
+          <th colspan="4" style="text-align:right">کۆی گشتی</th>
           <th><span id="subtotal2">0.00</span></th>
           <th></th>
         </tr>
@@ -174,8 +174,8 @@ function addRow(){
   tr.innerHTML = `
     <td>
       <select name="mode_${idx}" onchange="toggleMode(this, ${idx})">
-        <option value="existing">Existing</option>
-        <option value="manual">Manual</option>
+        <option value="existing">کاڵای داخڵکراو</option>
+        <option value="manual">کاڵای نوێ</option>
       </select>
     </td>
     <td class="prodCell">
