@@ -9,12 +9,14 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Purchase & Sales Manager</title>
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- relative path so it works in any subfolder; cache-bust -->
   <link href="styles.css?v=9" rel="stylesheet">
 </head>
 <body>
+
+
 <div class="app">
   <aside class="sidebar">
      <h2 class="logo">

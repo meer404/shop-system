@@ -234,24 +234,24 @@ function product_options($products, $selected_id = 0) {
 
     <div class="form-row" style="flex-wrap:wrap;gap:12px;align-items:flex-end">
       <div style="display:flex;flex-direction:column;min-width:220px">
-        <label>Customer</label>
-        <input value="<?= h($sale['customer_name']) ?>" disabled>
+      <label>Customer</label>
+      <input style="height: 36px;" value="<?= h($sale['customer_name']) ?>" disabled>
       </div>
       <div style="display:flex;flex-direction:column;max-width:160px">
-        <label>Subtotal</label>
-        <input id="subtotal" value="<?= number_format((float)$sale['subtotal'],2) ?>" disabled>
+      <label>Subtotal</label>
+      <input id="subtotal" style="height: 36px;" value="<?= number_format((float)$sale['subtotal'],2) ?>" disabled>
       </div>
       <div style="display:flex;flex-direction:column;max-width:160px">
-        <label>Paid</label>
-        <input type="number" step="0.01" name="paid" value="<?= h($sale['paid']) ?>">
+      <label>Paid</label>
+      <input type="number" step="0.01" style="height: 36px;" name="paid" value="<?= h($sale['paid']) ?>">
       </div>
       <div style="display:flex;flex-direction:column;max-width:200px">
-        <label>Sale date</label>
-        <input type="text" name="sale_date" placeholder="YYYY-MM-DD or YYYY-MM-DD HH:MM:SS" value="<?= h($sale['sale_date']) ?>">
+      <label>Sale date</label>
+      <input type="text" name="sale_date" style="height: 36px;" placeholder="YYYY-MM-DD or YYYY-MM-DD HH:MM:SS" value="<?= h($sale['sale_date']) ?>">
       </div>
       <div style="display:flex;flex-direction:column;min-width:300px;flex:1">
-        <label>Note</label>
-        <textarea name="note" rows="2" placeholder="Write note..."><?= h($sale['note'] ?? '') ?></textarea>
+      <label>Note</label>
+      <textarea name="note" rows="2" style="height: 72px;" placeholder="Write note..."><?= h($sale['note'] ?? '') ?></textarea>
       </div>
     </div>
 

@@ -615,11 +615,11 @@ tbody tr:last-child td {
 .danger,
 .warning,
 .info {
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   font-weight: 500;
-  display: flex;
+ 
   align-items: center;
   gap: var(--spacing-sm);
   animation: slideIn var(--transition-base);

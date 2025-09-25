@@ -1,199 +1,116 @@
-/* Modern Light Theme Receipt Styles */
-.receipt {
-  max-width: 800px;
-  margin: 24px auto;
-  padding: 32px;
-  background: white;
-  color: #111827;
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+/* =========================
+   Modern Light Receipt Styles
+   ========================= */
+.receipt{
+  max-width:800px;margin:24px auto;padding:32px;background:#fff;color:#111827;
+  border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 4px 6px -1px rgb(0 0 0 / 0.1)
 }
 
-.receipt .brand {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #e5e7eb;
+/* Header / Brand */
+.receipt .brand{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px;
+  padding-bottom:16px;border-bottom:2px solid #e5e7eb
+}
+.receipt .brand h2{
+  margin:0;font-size:28px;font-weight:700;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+  background-clip: text;-webkit-background-clip:text;-webkit-text-fill-color:transparent
+}
+.receipt .brand .badge{
+  background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:8px 16px;border-radius:999px;
+  font-weight:600;font-size:.875rem;box-shadow:0 2px 4px rgba(102,126,234,.2)
 }
 
-.receipt .brand h2 {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* Meta rows */
+.receipt .meta{display:flex;flex-wrap:wrap;gap:16px 32px;font-size:14px;margin:16px 0}
+.meta .kv{display:flex;gap:8px}
+.kv b{min-width:140px;color:#6b7280;font-weight:600}
+.kv span{color:#111827;font-weight:500}
+
+.hr{height:1px;background:linear-gradient(to right,transparent,#e5e7eb,transparent);margin:20px 0}
+.block-title{
+  font-size:16px;font-weight:700;margin:20px 0 12px;color:#4b5563;text-transform:uppercase;letter-spacing:.05em
 }
 
-.receipt .brand .badge {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+/* Table */
+.table{
+  width:100%;border-collapse:separate;border-spacing:0;margin:16px 0;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)
+}
+.table th{
+  background:#f9fafb;color:#4b5563;padding:12px;text-align:left;font-weight:600;font-size:13px;text-transform:uppercase;letter-spacing:.05em;border-bottom:2px solid #e5e7eb
+}
+.table td{padding:12px;color:#111827;border-bottom:1px solid #f3f4f6;background:#fff}
+.table tbody tr:hover{background:#f9fafb}
+.table tbody tr:last-child td{border-bottom:none}
+
+/* Totals box */
+.totals{display:flex;justify-content:flex-end;margin:24px 0}
+.totals table{width:auto;min-width:350px;border:2px solid #e5e7eb;border-radius:8px}
+.totals table th{text-align:right;padding-right:16px;background:#f9fafb}
+.totals table td{font-weight:600;color:#111827}
+.totals table tr:last-child{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%)}
+.totals table tr:last-child th,.totals table tr:last-child td{color:#fff;font-size:18px;padding:16px}
+
+/* Note + Actions */
+.note{
+  margin-top:20px;padding:16px;background:#fef3c7;border:1px solid #fbbf24;border-radius:8px;color:#92400e;font-size:14px
+}
+.actions{display:flex;justify-content:center;gap:12px;margin-top:24px}
+.print-btn{
+  appearance:none;border:none;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;
+  padding:12px 24px;border-radius:8px;cursor:pointer;font-weight:600;transition:all .3s ease;box-shadow:0 2px 4px rgba(102,126,234,.2)
+}
+.print-btn:hover{transform:translateY(-2px);box-shadow:0 4px 8px rgba(102,126,234,.3)}
+
+/* ========= Mobile Enhancements ========= */
+
+/* Tablet (<= 1024px) */
+@media (max-width:1024px){
+  .receipt{margin:16px;padding:24px}
+  .receipt .brand h2{font-size:24px}
 }
 
-.receipt .meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px 32px;
-  font-size: 14px;
-  margin: 16px 0;
+/* Mobile (<= 768px) */
+@media (max-width:768px){
+  .receipt{border-radius:12px;padding:20px}
+  .receipt .brand{flex-direction:column;align-items:flex-start;gap:8px}
+  .receipt .brand .badge{align-self:flex-start}
+
+  /* Meta becomes 2 columns that can wrap */
+  .receipt .meta{gap:12px 20px;font-size:13px}
+  .kv b{min-width:110px}
+
+  /* Make table horizontally scrollable instead of squeezing */
+  .table{display:block;width:auto;max-width:100%;overflow-x:auto;border-radius:6px}
+  .table th,.table td{padding:10px}
+
+  /* Totals: use full width */
+  .totals{justify-content:stretch}
+  .totals table{min-width:100%}
+  .totals table tr:last-child th,.totals table tr:last-child td{font-size:16px;padding:14px}
+
+  .actions{flex-wrap:wrap}
+  .print-btn{width:100%}
 }
 
-.meta .kv {
-  display: flex;
-  gap: 8px;
+/* Small phones (<= 480px) */
+@media (max-width:480px){
+  .receipt{margin:12px;padding:16px;border-radius:10px}
+  .receipt .brand h2{font-size:20px}
+  .kv b{min-width:96px}
+  .table{font-size:.9rem}
 }
 
-.kv b {
-  min-width: 140px;
-  color: #6b7280;
-  font-weight: 600;
+/* Very small devices (<= 360px) */
+@media (max-width:360px){
+  .receipt{margin:8px;padding:14px}
+  .receipt .brand h2{font-size:18px}
+  .kv b{min-width:88px}
 }
 
-.kv span {
-  color: #111827;
-  font-weight: 500;
-}
-
-.hr {
-  height: 1px;
-  background: linear-gradient(to right, transparent, #e5e7eb, transparent);
-  margin: 20px 0;
-}
-
-.block-title {
-  font-size: 16px;
-  font-weight: 700;
-  margin: 20px 0 12px;
-  color: #4b5563;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin: 16px 0;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.table th {
-  background: #f9fafb;
-  color: #4b5563;
-  padding: 12px;
-  text-align: left;
-  font-weight: 600;
-  font-size: 13px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 2px solid #e5e7eb;
-}
-
-.table td {
-  padding: 12px;
-  color: #111827;
-  border-bottom: 1px solid #f3f4f6;
-  background: white;
-}
-
-.table tbody tr:hover {
-  background: #f9fafb;
-}
-
-.table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.totals {
-  display: flex;
-  justify-content: flex-end;
-  margin: 24px 0;
-}
-
-.totals table {
-  width: auto;
-  min-width: 350px;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-}
-
-.totals table th {
-  text-align: right;
-  padding-right: 16px;
-  background: #f9fafb;
-}
-
-.totals table td {
-  font-weight: 600;
-  color: #111827;
-}
-
-.totals table tr:last-child {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.totals table tr:last-child th,
-.totals table tr:last-child td {
-  color: white;
-  font-size: 18px;
-  padding: 16px;
-}
-
-.note {
-  margin-top: 20px;
-  padding: 16px;
-  background: #fef3c7;
-  border: 1px solid #fbbf24;
-  border-radius: 8px;
-  color: #92400e;
-  font-size: 14px;
-}
-
-.actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.print-btn {
-  appearance: none;
-  border: none;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
-}
-
-.print-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
-}
-
-@media print {
-  body { background: white; }
-  .receipt { 
-    border: 1px solid #000; 
-    box-shadow: none;
-    max-width: 100%;
-    margin: 0;
-    padding: 20px;
-  }
-  .print-btn, .actions { display: none !important; }
-  .table th, .table td { border-color: #000; }
+/* Print */
+@media print{
+  body{background:#fff}
+  .receipt{border:1px solid #000;box-shadow:none;max-width:100%;margin:0;padding:20px}
+  .print-btn,.actions{display:none!important}
+  .table th,.table td{border-color:#000}
 }

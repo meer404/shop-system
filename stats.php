@@ -3,9 +3,7 @@ require_once __DIR__ . '/header.php';
 require __DIR__.'/inc/config.php'; 
 require_once __DIR__ . '/inc/auth.php';
 
-if (!isset($pdo) || !($pdo instanceof PDO)) {
-    die("<b>DB error:</b> config.php should set <code>\$pdo = new PDO(...)</code>");
-}
+
 
 $page = 'stats.php';
 require_once __DIR__ . '/header.php';
@@ -183,25 +181,29 @@ body {
     opacity: 0.9;
     background: var(--gradient-primary);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .stats-card.sales .stats-icon {
     background: linear-gradient(135deg, var(--success), #34d399);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .stats-card.purchases .stats-icon {
     background: linear-gradient(135deg, var(--warning), #fbbf24);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 
 .stats-card.profit.negative .stats-icon {
     background: linear-gradient(135deg, var(--danger), #f87171);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
 }
 

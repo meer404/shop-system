@@ -29,7 +29,7 @@ require __DIR__.'/inc/header.php'; ?>
         <?php endforeach; ?>
       </select>
       <input type="number" step="0.01" name="amount" placeholder="Amount" required>
-      <input name="note" placeholder="Note (optional)">
+      <textarea name="note" placeholder="Note (optional)"></textarea>
       <button type="submit">Save</button>
     </div>
   </form>

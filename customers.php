@@ -14,9 +14,16 @@ require __DIR__.'/inc/header.php'; ?>
   <h2>Add Customer</h2>
   <?php if($msg): ?><p class="success"><?= h($msg) ?></p><?php endif; ?>
   <form method="post" action="customers.php">
-    <div class="form-row">
-      <input name="name" placeholder="Customer name" required>
-      <input name="phone" placeholder="Phone (optional)">
+   <div class="form-row">
+      <div style="flex:1">
+      <label for="name">Customer Name</label>
+      <input type="text" id="name" name="name" placeholder="Customer name" required>
+      </div>
+      <div style="flex:1">
+      <label for="phone">Phone (optional)</label>
+      <input type="text" id="phone" name="phone" placeholder="Phone (optional)">
+      </div>
+    
       <button type="submit">Save</button>
     </div>
   </form>
@@ -33,6 +40,7 @@ require __DIR__.'/inc/header.php'; ?>
     </tr>
   <?php endforeach; ?>
   </tbody></table>
+</div>
 </div>
 <?php require __DIR__.'/inc/footer.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>

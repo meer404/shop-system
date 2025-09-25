@@ -23,9 +23,15 @@ require __DIR__.'/inc/header.php';
   <h2>Add Supplier</h2>
   <?php if ($msg): ?><p class="success"><?= h($msg) ?></p><?php endif; ?>
   <form method="post" action="suppliers.php">
-    <div class="form-row">
-      <input name="name" placeholder="Supplier name" required>
-      <input name="phone" placeholder="Phone (optional)">
+      <div class="form-row">
+      <div style="flex:1">
+      <label for="name">Supplier Name</label>
+      <input type="text" id="name" name="name" placeholder="Supplier name" required>
+      </div>
+      <div style="flex:1">
+      <label for="phone">Phone</label>
+      <input type="text" id="phone" name="phone" placeholder="Phone (optional)">
+      </div>
       <button type="submit">Save</button>
     </div>
   </form>
