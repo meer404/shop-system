@@ -35,6 +35,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
       <a href="suppliers.php"<?=is_active('suppliers.php')?>><span>🏭</span><b>Suppliers</b></a>
       <a href="purchase_new.php"<?=is_active('purchase_new.php')?>><span>🛒</span><b>Buy Items</b></a>
       <a href="stats.php"<?=is_active('stats.php')?>><span>📈</span><b>Stats</b></a>
+      <a href="manual_receipts.php"<?=is_active('manual_receipts.php')?>><span>📋</span><b>Manual Receipts</b></a>
     
     <div class="dropdown lang-dropdown">
       <a href="#" class="dropdown-toggle"><span>🌐</span><b>Language</b></a>
