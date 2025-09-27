@@ -1,12 +1,19 @@
 <?php
 require_once __DIR__ . '/inc/config.php';
 require_once __DIR__ . '/inc/auth.php';
+
+// Helper function to find if a column exists in a table
 function findColumn(PDO $pdo, string $table, array $candidates): ?string {
-  $stmt = $pdo->prepare("DESCRIBE `$table`");
-  $stmt->execute();
-  $cols = array_map(fn($r) => strtolower($r['Field']), $stmt->fetchAll(PDO::FETCH_ASSOC));
-  foreach ($candidates as $c) {
-    if (in_array(strtolower($c), $cols, true)) return $c;
+  try {
+    $stmt = $pdo->prepare("DESCRIBE `$table`");
+    $stmt->execute();
+    $cols = array_map(fn($r) => strtolower($r['Field']), $stmt->fetchAll(PDO::FETCH_ASSOC));
+    foreach ($candidates as $c) {
+      if (in_array(strtolower($c), $cols, true)) return $c;
+    }
+  } catch (PDOException $e) {
+    // Table might not exist, handle gracefully
+    return null;
   }
   return null;
 }
@@ -14,138 +21,201 @@ function findColumn(PDO $pdo, string $table, array $candidates): ?string {
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 if ($id <= 0) { die('Invalid receipt ID'); }
 
-$dateCol = findColumn($pdo, 'purchases', ['date','created_at','purchase_date','bought_at','createdon','created_on','datetime','timestamp']);
-$dateSelect = $dateCol ? "`p`.`$dateCol` AS purchase_date_col" : "NULL AS purchase_date_col";
+// --- Database Columns ---
+$dateCol = findColumn($pdo, 'purchases', ['date','created_at','purchase_date']);
+$dateSelect = $dateCol ? "p.`$dateCol` AS purchase_date_col" : "NULL AS purchase_date_col";
 
-$hasSubtotal = findColumn($pdo, 'purchases', ['subtotal']) !== null;
-$hasDiscount = findColumn($pdo, 'purchases', ['discount']) !== null;
-$hasTax      = findColumn($pdo, 'purchases', ['tax']) !== null;
-$hasTotal    = findColumn($pdo, 'purchases', ['total']) !== null;
+$supplierCol = findColumn($pdo, 'suppliers', ['name', 'supplier_name']);
+$supplierSelect = $supplierCol ? "s.`$supplierCol` AS supplier_name_col" : "s.id AS supplier_name_col";
 
-$selects = [
-  "p.id",
-  $dateSelect,
-  $hasTotal    ? "p.total"    : "NULL AS total",
-  $hasSubtotal ? "p.subtotal" : "NULL AS subtotal",
-  $hasDiscount ? "p.discount" : "0 AS discount",
-  $hasTax      ? "p.tax"      : "0 AS tax",
-  "p.supplier_id",
-  "s.name AS supplier_name",
-  "s.phone AS supplier_phone"
-];
+$noteCol = findColumn($pdo, 'purchases', ['note', 'notes', 'description']);
+$noteSelect = $noteCol ? "p.`$noteCol` AS note_col" : "'' AS note_col";
 
-$sql = "SELECT " . implode(", ", $selects) . "
-        FROM `purchases` p
-        LEFT JOIN `suppliers` s ON s.id = p.supplier_id
-        WHERE p.id = ?";
-
-$stmt = $pdo->prepare($sql);
+// --- Fetch Main Purchase Data ---
+$stmt = $pdo->prepare("
+  SELECT p.*, {$dateSelect}, {$noteSelect}, {$supplierSelect}
+  FROM purchases p
+  LEFT JOIN suppliers s ON s.id = p.supplier_id
+  WHERE p.id = ?
+");
 $stmt->execute([$id]);
-$pur = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$pur) { die('Receipt not found'); }
+$purchase = $stmt->fetch(PDO::FETCH_ASSOC);
 
-$items = $pdo->prepare("
-  SELECT pi.product_id, pi.qty, pi.price,
-         COALESCE(pr.name, CONCAT('Product #', pi.product_id)) AS product_name
+if (!$purchase) { die('Purchase not found.'); }
+
+// --- Fetch Purchase Items ---
+$stmt = $pdo->prepare("
+  SELECT pi.*, pr.name AS product_name
   FROM purchase_items pi
-  LEFT JOIN products pr ON pr.id = pi.product_id
+  JOIN products pr ON pr.id = pi.product_id
   WHERE pi.purchase_id = ?
 ");
-$items->execute([$id]);
-$rows = $items->fetchAll(PDO::FETCH_ASSOC);
+$stmt->execute([$id]);
+$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-$computedSubtotal = 0.0;
-foreach ($rows as $r) { $computedSubtotal += (float)$r['qty'] * (float)$r['price']; }
+// --- Calculations ---
+$subtotal = 0.0;
+foreach($rows as $it) {
+  $subtotal += (float)$it['qty'] * (float)$it['price'];
+}
+$discount = (float)($purchase['discount'] ?? 0);
+$tax      = (float)($purchase['tax'] ?? 0);
+$total    = $subtotal - $discount + $tax;
 
-$subtotal = is_null($pur['subtotal']) ? $computedSubtotal : (float)$pur['subtotal'];
-$discount = isset($pur['discount']) ? (float)$pur['discount'] : 0.0;
-$tax      = isset($pur['tax']) ? (float)$pur['tax'] : 0.0;
-$total    = isset($pur['total']) && $pur['total'] > 0 ? (float)$pur['total'] : max(0, $subtotal - $discount + $tax);
-
-$rawDate = $pur['purchase_date_col'] ?? null;
-$invDate = $rawDate ? date('Ymd', strtotime($rawDate)) : date('Ymd');
-$invNo   = 'PUR-' . $invDate . '-' . $pur['id'];
-
-$displayDate = $rawDate ? date('Y-m-d H:i', strtotime($rawDate)) : '—';
-
-// Show overall Paid vs Credit from sales here as well, per your request
-$summaryStmt = $pdo->query("
-  SELECT 
-    SUM(CASE WHEN is_credit = 1 THEN 1 ELSE 0 END) AS credit_count,
-    SUM(CASE WHEN is_credit = 0 THEN 1 ELSE 0 END) AS paid_count
-  FROM sales
-");
-$summary = $summaryStmt->fetch(PDO::FETCH_ASSOC);
-$paidCount   = (int)($summary['paid_count'] ?? 0);
-$creditCount = (int)($summary['credit_count'] ?? 0);
+function safe($v){ return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 ?>
 <!doctype html>
-<html>
+<html lang="en" dir="ltr">
 <head>
   <meta charset="utf-8">
-  <title>Purchase Receipt #<?= htmlspecialchars($invNo) ?></title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="receipt.css">
+  <title>Purchase Receipt #<?= safe($purchase['id']) ?></title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, Tahoma, sans-serif; background: #f9f7f4; color: #000; font-size: 14px; line-height: 1.4; padding: 20px; }
+    .receipt-wrapper { max-width: 800px; margin: 0 auto; background: #fffef9; border: 2px solid #2c5282; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .header-section { border-bottom: 2px solid #2c5282; padding-bottom: 15px; margin-bottom: 15px; background: linear-gradient(to bottom, #e6f2ff, #f0f7ff); padding: 15px; border-radius: 4px 4px 0 0; margin: -20px -20px 15px -20px; }
+    .company-header { text-align: center; margin-bottom: 10px; }
+    .company-header h1 { font-size: 24px; font-weight: bold; margin-bottom: 5px; color: #1a365d; text-shadow: 1px 1px 2px rgba(0,0,0,0.1); }
+    .company-info { font-size: 12px; line-height: 1.6; color: #2c5282; }
+    .receipt-details { display: flex; justify-content: space-between; margin-bottom: 20px; border: 1px solid #5a88b8; background: #f0f7ff; border-radius: 4px; }
+    .detail-group { flex: 1; padding: 10px; border-right: 1px solid #5a88b8; }
+    .detail-group:last-child { border-right: none; }
+    .detail-label { font-weight: bold; color: #1a365d; display: inline-block; margin-right: 5px; }
+    .detail-value { color: #2c5282; font-weight: 600; }
+    .supplier-section { margin-bottom: 20px; padding: 10px; border: 1px solid #5a88b8; background: #fdfcfa; border-radius: 4px; }
+    .items-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; border: 1px solid #2c5282; background: #fff; }
+    .items-table thead { background: #ffd000ff; color: black; }
+    .items-table th { border: 1px solid #2c5282; padding: 8px; text-align: center; font-weight: bold; font-size: 13px; }
+    .items-table td { border: 1px solid #5a88b8; padding: 6px 8px; text-align: center; background: #fff; }
+    .items-table tbody tr:nth-child(even) { background: #f7fafc; }
+    .items-table .item-name { text-align: left; }
+    .items-table .number-col { text-align: right; font-weight: 500; }
+    .totals-section { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+    .totals-table { width: 40%; border-collapse: collapse; }
+    .totals-table td { padding: 8px; border: 1px solid #5a88b8; }
+    .totals-table .total-label { font-weight: bold; text-align: left; background: #f0f7ff; color: #1a365d; }
+    .totals-table .total-value { text-align: right; font-weight: bold; font-size: 1.1em; }
+    .note-section { border: 1px solid #5a88b8; padding: 10px; margin-bottom: 20px; background: #fef9e7; min-height: 60px; border-radius: 4px; }
+    .note-label { font-weight: bold; margin-bottom: 5px; color: #1a365d; }
+    .footer-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #2c5282; background: #f0f7ff; margin: 30px -20px -20px -20px; padding: 20px; }
+    .print-info { text-align: center; font-size: 11px; color: #4a5568; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #cbd5e0; }
+    .signatures { display: flex; justify-content: space-around; margin-top: 20px; }
+    .signature-box { text-align: center; min-width: 200px; }
+    .signature-line { border-bottom: 2px solid #2c5282; margin-bottom: 5px; min-height: 40px; }
+    .signature-label { font-size: 12px; color: #1a365d; font-weight: bold; }
+    .print-actions { text-align: center; margin: 20px 0; }
+    .bilingual { display: flex; justify-content: space-between; align-items: center; }
+    @media print { body { padding: 0; background: #fff; } .receipt-wrapper { border: none; max-width: 100%; box-shadow: none; } .print-actions { display: none; } }
+  </style>
 </head>
 <body>
-  <div class="receipt">
-    <div class="brand">
-      <h2>My Shop</h2>
-      <span class="badge">PURCHASE RECEIPT</span>
+  <div class="receipt-wrapper">
+    <div class="header-section">
+      <div class="company-header">
+        <h1>ใบเสร็จการซื้อ</h1>
+        <div class="bilingual">
+           <img src="images/Logo.png" alt="Company Logo" style="max-width: 150px;">
+          <div class="company-info">
+            Control Board<br>
+            سلێمانی - چوارباخ خوار فولکەی مامە ڕیشە<br>
+            Phone: 07732828287 - 00722142666 <br>
+             Email: jumaarasoul3@gmail.com
+          </div>
+        </div>
+      </div>
     </div>
-
-    <div class="meta">
-      <div class="kv"><b>Receipt #:</b><span><?= htmlspecialchars($invNo) ?></span></div>
-      <div class="kv"><b>Date:</b><span><?= htmlspecialchars($displayDate) ?></span></div>
+    
+    <div class="receipt-details">
+      <div class="detail-group">
+        <span class="detail-label">Date:</span>
+        <span class="detail-value"><?= safe(date('d/m/Y', strtotime($purchase['purchase_date_col'] ?? time()))) ?></span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Receipt Type:</span>
+        <span class="detail-value">Purchase</span>
+      </div>
+      <div class="detail-group">
+        <span class="detail-label">Receipt No:</span>
+        <span class="detail-value">PUR-<?= safe($purchase['id']) ?></span>
+      </div>
     </div>
-    <div class="hr"></div>
-
-    <div class="block-title">Supplier</div>
-    <div class="meta">
-      <div class="kv"><b>Name:</b><span><?= htmlspecialchars($pur['supplier_name'] ?? '—') ?></span></div>
-      <div class="kv"><b>Phone:</b><span><?= htmlspecialchars($pur['supplier_phone'] ?? '—') ?></span></div>
+    
+    <div class="supplier-section">
+      <span class="detail-label">Supplier:</span>
+      <span class="detail-value"><?= safe($purchase['supplier_name_col'] ?? 'N/A') ?></span>
     </div>
-
-    <div class="block-title">Items</div>
-    <table class="table">
-      <thead>
-        <tr><th style="width:50%">Product</th><th>Qty</th><th>Cost</th><th>Subtotal</th></tr>
-      </thead>
-      <tbody>
-        <?php foreach ($rows as $it): $line = (float)$it['qty'] * (float)$it['price']; ?>
-        <tr>
-          <td><?= htmlspecialchars($it['product_name']) ?></td>
-          <td><?= (float)$it['qty'] ?></td>
-          <td><?= number_format((float)$it['price'], 2) ?></td>
-          <td><?= number_format($line, 2) ?></td>
-        </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
-
-    <div class="totals">
-      <table class="table">
+    
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th width="5%">#</th>
+                <th width="50%">Product</th>
+                <th width="15%">Quantity</th>
+                <th width="15%">Unit Price</th>
+                <th width="15%">Line Total</th>
+            </tr>
+        </thead>
         <tbody>
-          <tr><th>Subtotal</th><td style="text-align:right"><?= number_format($subtotal, 2) ?></td></tr>
-          <tr><th>Discount</th><td style="text-align:right">- <?= number_format($discount, 2) ?></td></tr>
-          <tr><th>Tax</th><td style="text-align:right"><?= number_format($tax, 2) ?></td></tr>
-          <tr><th>Total</th><td style="text-align:right"><strong><?= number_format($total, 2) ?></strong></td></tr>
+            <?php $i=1; foreach ($rows as $it): $line = (float)$it['qty'] * (float)$it['price']; ?>
+            <tr>
+              <td><?= $i++ ?></td>
+              <td class="item-name"><?= safe($it['product_name']) ?></td>
+              <td class="number-col"><?= number_format((float)$it['qty'], 2) ?></td>
+              <td class="number-col">$<?= number_format((float)$it['price'], 2) ?></td>
+              <td class="number-col"><strong>$<?= number_format($line, 2) ?></strong></td>
+            </tr>
+            <?php endforeach; ?>
         </tbody>
-      </table>
+    </table>
+    
+    <div class="totals-section">
+        <table class="totals-table">
+            <tr>
+                <td class="total-label">Subtotal</td>
+                <td class="total-value number-col">$<?= number_format($subtotal, 2) ?></td>
+            </tr>
+            <tr>
+                <td class="total-label">Discount</td>
+                <td class="total-value number-col">-$<?= number_format($discount, 2) ?></td>
+            </tr>
+             <tr>
+                <td class="total-label">Tax</td>
+                <td class="total-value number-col">$<?= number_format($tax, 2) ?></td>
+            </tr>
+            <tr>
+                <td class="total-label">Grand Total</td>
+                <td class="total-value number-col">$<?= number_format($total, 2) ?></td>
+            </tr>
+        </table>
     </div>
-
-    <div class="hr"></div>
-    <div class="block-title">Overall Sales Summary</div>
-    <div class="meta">
-      <div class="kv"><b>Paid Sales:</b><span><?= $paidCount ?></span></div>
-      <div class="kv"><b>Credit Sales:</b><span><?= $creditCount ?></span></div>
+    
+    <?php if (!empty($purchase['note_col'])): ?>
+    <div class="note-section">
+      <div class="note-label">Note:</div>
+      <div><?= nl2br(safe($purchase['note_col'])) ?></div>
     </div>
-
-    <div class="note">Internal document for inventory and accounting.</div>
-
-    <div class="actions">
-      <button class="print-btn" onclick="window.print()">🖨 Print</button>
+    <?php endif; ?>
+    
+    <div class="footer-section">
+      <div class="print-info">
+        Page 1 of 1 | Time <?= date('d/m/Y h:i:s A') ?> | Print By: Admin
+      </div>
+      <div class="signatures">
+        <div class="signature-box">
+          <div class="signature-line"></div>
+          <div class="signature-label">Accountant</div>
+        </div>
+        <div class="signature-box">
+          <div class="signature-line"></div>
+          <div class="signature-label">Receiver Signature</div>
+        </div>
+      </div>
     </div>
+  </div>
+  
+  <div class="print-actions">
+    <button onclick="window.print()">Print Receipt</button>
+    <a href="index.php">Dashboard</a>
   </div>
 </body>
 </html>
