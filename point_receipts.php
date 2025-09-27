@@ -5,6 +5,7 @@
  * 1. If 'view_receipt' is in the URL, it displays a standalone, printable receipt and exits.
  * 2. Otherwise, it displays the list of all point receipts within the main site layout.
  */
+$page = 'point_system.php';
 
 require_once __DIR__ . '/inc/config.php'; // Needed for both modes
 require_once __DIR__ . '/inc/auth.php';   // Needed for both modes
@@ -118,8 +119,7 @@ if (isset($_GET['view_receipt'])) {
 
 // --- MODE 2: LIST ALL RECEIPTS (Main Page View) ---
 
-// This part will only run if we are NOT viewing a single receipt.
-$page = 'point_receipts.php';
+
 require_once __DIR__ . '/header.php'; // Include the main site header
 
 // --- DELETE ACTION (for list view) ---

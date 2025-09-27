@@ -1,6 +1,7 @@
 <?php
 // purchase_new.php
 // Create a new purchase: choose existing products or add manual products inline.
+$page = 'purchase_system.php'; 
 
 require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/inc/config.php';

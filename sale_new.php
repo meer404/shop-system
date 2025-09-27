@@ -1,5 +1,5 @@
 <?php 
-$page = 'sale_new.php'; 
+$page = 'sale_system.php'; 
 require_once __DIR__ . '/header.php'; 
 require __DIR__.'/inc/config.php'; 
 require_once __DIR__ . '/inc/auth.php';

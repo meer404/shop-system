@@ -1,5 +1,6 @@
 <?php
-$page = 'point_receipts.php';
+$page = 'point_system.php';
+
 require_once __DIR__ . '/header.php';
 require_once __DIR__ . '/inc/auth.php';
 require_once __DIR__ . '/inc/config.php';

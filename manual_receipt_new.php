@@ -1,5 +1,6 @@
 <?php
 // manual_receipt_new.php
+$page = '3arz_system.php'; 
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 

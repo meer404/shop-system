@@ -1,4 +1,4 @@
-<?php $page = 'purchases.php'; require_once __DIR__ . '/header.php'; require_once __DIR__ . '/inc/auth.php';?>
+<?php $page = 'purchase_system.php';  require_once __DIR__ . '/header.php'; require_once __DIR__ . '/inc/auth.php';?>
 <?php
 require __DIR__.'/inc/config.php';
 $page_title = "Purchases";
