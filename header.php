@@ -28,15 +28,13 @@ if (session_status() === PHP_SESSION_NONE) session_start();
       <a href="index.php"<?=is_active('index.php')?>><span>🏠</span><b>Dashboard</b></a>
       <a href="customers.php"<?=is_active('customers.php')?>><span>👤</span><b>Customers</b></a>
       <a href="products.php"<?=is_active('products.php')?>><span>📦</span><b>Products</b></a>
-      <a href="sale_new.php"<?=is_active('sale_new.php')?>><span>🧾</span><b>New Sale</b></a>
-      <a href="purchases.php"<?=is_active('purchases.php')?>><span>📥</span><b>Purchases</b></a>
-      <a href="payments.php"<?=is_active('payments.php')?>><span>💰</span><b>Payments</b></a>
-      <a href="receipts.php"<?=is_active('receipts.php')?>><span>🖨️</span><b>Receipts</b></a>
-      <a href="suppliers.php"<?=is_active('suppliers.php')?>><span>🏭</span><b>Suppliers</b></a>
-      <a href="purchase_new.php"<?=is_active('purchase_new.php')?>><span>🛒</span><b>Buy Items</b></a>
+      <a href="sale_system.php"<?=is_active('sale_system.php')?>><span>🧾</span><b>Sale Part</b></a>
+      
+      <a href="purchase_system.php"<?=is_active('purchase_system.php')?>><span>🛒</span><b>Buy Part</b></a>
+      
+      <a href="3arz_system.php"<?=is_active('3arz_system.php')?>><span>📋</span><b>3arz Part</b></a>
+      <a href="point_system.php"<?=is_active('point_system.php')?>><span>⭐</span><b>zar3a System</b></a>
       <a href="stats.php"<?=is_active('stats.php')?>><span>📈</span><b>Stats</b></a>
-      <a href="manual_receipts.php"<?=is_active('manual_receipts.php')?>><span>📋</span><b>Manual Receipts</b></a>
-      <a href="point_system.php"<?=is_active('point_system.php')?>><span>⭐</span><b>Points System</b></a>
     
     <div class="dropdown lang-dropdown">
       <a href="#" class="dropdown-toggle"><span>🌐</span><b>Language</b></a>
