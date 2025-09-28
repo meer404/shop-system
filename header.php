@@ -35,7 +35,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
       <a href="3arz_system.php"<?=is_active('3arz_system.php')?>><span>📋</span><b>3arz Part</b></a>
       <a href="point_system.php"<?=is_active('point_system.php')?>><span>⭐</span><b>zar3a System</b></a>
       <a href="stats.php"<?=is_active('stats.php')?>><span>📈</span><b>Stats</b></a>
-    
+      <a href="db_backup.php"<?=is_active('db_backup.php')?>><span>💾</span><b>Backup</b></a>
     <div class="dropdown lang-dropdown">
       <a href="#" class="dropdown-toggle"><span>🌐</span><b>Language</b></a>
       <div class="dropdown-menu">
