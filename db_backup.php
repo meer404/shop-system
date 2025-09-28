@@ -73,19 +73,19 @@ require __DIR__ . '/inc/header.php';
 
 <div class="card">
     <div class="card-header">
-        <h2 style="margin:0;">Manual Database Backup</h2>
+        <h2 style="margin:0;">Database Backup</h2>
     </div>
     
     <div style="padding: 20px;">
         <p>This tool allows you to create a complete backup of your application's database.</p>
-        <p style="margin-top: 10px;">Clicking the button below will generate a single <strong>.sql</strong> file containing all your data (customers, products, sales, points, etc.) and download it to your computer.</p>
+        <p style="margin-top: 10px;">Clicking the button below will generate a single <strong>.sql</strong> file containing all your data  and download it to your computer.</p>
         <p style="margin-top: 10px;"><strong>It is highly recommended to perform backups regularly and store the downloaded file in a secure, separate location.</strong></p>
         
-        <form method="post" style="margin-top: 25px; text-align: center;">
-            <button type="submit" name="download_backup" class="btn" style="padding: 15px 30px; font-size: 1.2em;">
-                💾 Download Database Backup
-            </button>
-        </form>
+        <div style="margin-top: 25px; text-align: center;">
+            <a href="download_backup.php" class="btn" style="padding: 15px 30px; font-size: 1.2em;">
+            💾 Download Database Backup
+            </a>
+        </div>
     </div>
 </div>
 
