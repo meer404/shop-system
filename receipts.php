@@ -1,6 +1,9 @@
-<?php $page = 'sale_system.php'; require_once __DIR__ . '/header.php';require_once __DIR__ . '/inc/auth.php'; ?>
-<?php
+<?php 
+$page = 'sale_system.php'; 
+require_once __DIR__ . '/header.php';
+require_once __DIR__ . '/inc/auth.php';
 require __DIR__.'/inc/config.php';
+
 $page_title = "All Receipts";
 $customers = $pdo->query("SELECT id, name FROM customers ORDER BY name")->fetchAll();
 
@@ -27,11 +30,11 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
 $rows = $stmt->fetchAll();
 
-require __DIR__.'/inc/header.php';
+
 ?>
-<div class="card">
-  <h2>All Receipts</h2>
-  <form method="get" action="receipts.php" class="form-row noprint">
+<div class="card noprint">
+  <h2>Receipts Filter</h2>
+  <form method="get" action="receipts.php" class="form-row">
     <select name="customer_id">
       <option value="0">-- All customers --</option>
       <?php foreach($customers as $c): ?>
@@ -74,15 +77,11 @@ require __DIR__.'/inc/header.php';
         <td class="actions">
           <a href="sale_receipt.php?id=<?= (int)$r['id'] ?>">Open</a>
           
-          <a href="receipt_edit_items.php?id=<?= (int)$r['id'] ?>">Edit</a>
-
-          <button onclick="window.open('sale_receipt.php?id=<?= (int)$r['id'] ?>','_blank').print()" type="button">Print</button>
+          <a href="receipt_edit_items.php?id=<?=(int)$r['id']?>" target="_blank" class="btn">Edit Items</a>
         </td>
       </tr>
       <?php endforeach; ?>
     </tbody>
   </table>
 </div>
-
-<?php require __DIR__.'/inc/footer.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>

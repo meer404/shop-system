@@ -314,6 +314,7 @@ body {
   margin-left: 280px;
   padding: var(--spacing-xl);
   min-height: 100vh;
+  transition: margin-left var(--transition-base);
 }
 
 /* Modern Card Component */
@@ -619,7 +620,7 @@ tbody tr:last-child td {
   border-radius: var(--radius-md);
   margin-bottom: var(--spacing-sm);
   font-weight: 500;
- 
+  
   align-items: center;
   gap: var(--spacing-sm);
   animation: slideIn var(--transition-base);
@@ -658,48 +659,6 @@ tbody tr:last-child td {
   background: var(--info-bg);
   color: var(--info);
   border: 1px solid var(--info-light);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 100%;
-    transform: translateX(-100%);
-  }
-  
-  .sidebar.active {
-    transform: translateX(0);
-  }
-  
-  .content {
-    margin-left: 0;
-    padding: var(--spacing-md);
-  }
-  
-  .form-row {
-    flex-direction: column;
-  }
-  
-  .form-row > * {
-    min-width: 100%;
-  }
-  
-  table {
-    font-size: 0.875rem;
-  }
-  
-  th, td {
-    padding: var(--spacing-sm);
-  }
-  
-  .card {
-    padding: var(--spacing-md);
-    border-radius: var(--radius-md);
-  }
-  
-  h1 { font-size: 2rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
 }
 
 /* Print Styles */
@@ -867,7 +826,7 @@ tbody tr:last-child td {
   color: white;
 }
 
-/* Mobile Menu Toggle (if needed) */
+/* Mobile Menu Toggle (default state is hidden on desktop) */
 .mobile-menu-toggle {
   display: none;
   position: fixed;
@@ -878,13 +837,78 @@ tbody tr:last-child td {
   color: white;
   border: none;
   border-radius: var(--radius-md);
-  padding: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md); /* Better padding for tap area */
   cursor: pointer;
   box-shadow: var(--shadow-lg);
+  font-size: 1.5rem; /* Make icon larger */
+  line-height: 1; /* Center icon vertically */
 }
 
+
+/* =================================================================== */
+/* ===================   START: RESPONSIVE STYLES   ================== */
+/* =================================================================== */
+
 @media (max-width: 768px) {
+  
+  /* Show the mobile menu toggle button */
   .mobile-menu-toggle {
     display: block;
   }
+  
+  /* Sidebar is hidden off-screen by default */
+  .sidebar {
+    transform: translateX(-100%);
+    box-shadow: none; /* Hide shadow when off-screen */
+  }
+  
+  /* .active class (toggled by JS) slides the sidebar into view */
+  .sidebar.active {
+    transform: translateX(0);
+    box-shadow: var(--shadow-xl); /* Show a prominent shadow when it overlaps content */
+  }
+  
+  /* Main content area takes up the full screen width */
+  .content {
+    margin-left: 0;
+    padding: var(--spacing-lg); /* Adjust padding for smaller screens */
+  }
+  
+  /* Make tables inside cards scroll horizontally to prevent layout breaks */
+  .card table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+
+  /* Stack form elements vertically */
+  .form-row {
+    flex-direction: column;
+    align-items: stretch; /* Make children full-width */
+  }
+  
+  .form-row > * {
+    min-width: 100%;
+    margin-bottom: var(--spacing-md); /* Add space between stacked elements */
+  }
+  
+  /* Adjust typography for smaller screens */
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+  
+  .card {
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+  }
+  
+  th, td {
+    padding: var(--spacing-sm) var(--spacing-md);
+    white-space: nowrap; /* Prevent table content from wrapping */
+  }
 }
+
+/* =================================================================== */
+/* ====================   END: RESPONSIVE STYLES   =================== */
+/* =================================================================== */

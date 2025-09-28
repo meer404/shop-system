@@ -29,26 +29,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_item'])) {
 
 // Fetch all existing items to display in the table
 $items = $pdo->query("SELECT * FROM point_items ORDER BY name ASC")->fetchAll();
-
-require __DIR__ . '/inc/header.php';
 ?>
-
 <div class="card">
-    <h2>Add New Point Item</h2>
+    <h2>Add Point Item</h2>
     <?php if ($msg): ?><p class="success"><?= htmlspecialchars($msg) ?></p><?php endif; ?>
     <?php if ($error): ?><p class="danger"><?= htmlspecialchars($error) ?></p><?php endif; ?>
-
+    
     <form method="post" action="point_items.php">
         <div class="form-row">
-            <div style="flex:2">
+            <div style="flex:2;">
                 <label for="name">Item Name</label>
-                <input type="text" id="name" name="name" placeholder="e.g., Service A" required>
+                <input type="text" id="name" name="name" placeholder="e.g., Coffee Mug" required>
             </div>
-            <div style="flex:1">
-                <label for="price">Price ($)</label>
+            <div style="flex:1;">
+                <label for="price">Price</label>
                 <input type="number" id="price" name="price" min="0" step="0.01" value="0.00" required>
             </div>
-            <div style="flex:1">
+            <div style="flex:1;">
                 <label for="points">Points</label>
                 <input type="number" id="points" name="points" min="0" step="0.01" value="0.00" required>
             </div>
@@ -86,6 +83,4 @@ require __DIR__ . '/inc/header.php';
         </table>
     </div>
 </div>
-
-<?php require __DIR__ . '/inc/footer.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>

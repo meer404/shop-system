@@ -1,6 +1,10 @@
-<?php $page = 'sale_system.php'; require_once __DIR__ . '/header.php'; require_once __DIR__ . '/inc/auth.php'; ?>
-<?php
-require __DIR__.'/inc/config.php'; $page_title="Payments"; $msg=null;
+<?php 
+$page = 'sale_system.php'; 
+require_once __DIR__ . '/header.php'; 
+require_once __DIR__ . '/inc/auth.php';
+require __DIR__.'/inc/config.php'; 
+$page_title="Payments"; 
+$msg=null;
 $customers=$pdo->query("SELECT id,name FROM customers ORDER BY name")->fetchAll();
 if($_SERVER['REQUEST_METHOD']==='POST'){
   $customer_id=(int)($_POST['customer_id']??0); $amount=(float)($_POST['amount']??0); $note=trim($_POST['note']??'');
@@ -16,7 +20,8 @@ if($customer_id_filter>0){
 }else{
   $rows=$pdo->query($q." ORDER BY p.paid_at DESC, p.id DESC")->fetchAll();
 }
-require __DIR__.'/inc/header.php'; ?>
+
+?>
 <div class="card">
   <h2>Add Payment</h2>
   <?php if($msg): ?><p class="success"><?= h($msg) ?></p><?php endif; ?>
@@ -48,5 +53,4 @@ require __DIR__.'/inc/header.php'; ?>
     <?php endforeach; ?>
   </tbody></table>
 </div>
-<?php require __DIR__.'/inc/footer.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>

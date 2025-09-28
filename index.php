@@ -1,6 +1,11 @@
-<?php $page = 'index.php'; require_once __DIR__ . '/header.php'; require_once __DIR__ . '/inc/auth.php';?>
-<?php
-require __DIR__.'/inc/config.php'; $page_title="Dashboard"; require __DIR__.'/inc/header.php';
+<?php 
+$page = 'index.php'; 
+require_once __DIR__ . '/header.php'; 
+require_once __DIR__ . '/inc/auth.php';
+require __DIR__.'/inc/config.php'; 
+
+$page_title="Dashboard"; 
+
 $total_customers = $pdo->query("SELECT COUNT(*) FROM customers")->fetchColumn();
 $total_products  = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
 $total_sales     = $pdo->query("SELECT COUNT(*) FROM sales")->fetchColumn();
@@ -21,7 +26,7 @@ $balances = $pdo->query("SELECT * FROM v_customer_balance ORDER BY balance DESC"
   <table><thead><tr><th>Customer</th><th>Total Purchased</th><th>Total Paid</th><th>Balance</th><th>Actions</th></tr></thead><tbody>
   <?php foreach($balances as $b): ?>
     <tr>
-      <td><?= h($b['name']) ?></td>
+      <td><?= htmlspecialchars($b['name']) ?></td>
       <td>$<?= number_format((float)$b['total_purchased'],2) ?></td>
       <td>$<?= number_format((float)$b['total_paid'],2) ?></td>
       <td class="<?= $b['balance']>0?'danger':'' ?>">$<?= number_format((float)$b['balance'],2) ?></td>
@@ -33,4 +38,6 @@ $balances = $pdo->query("SELECT * FROM v_customer_balance ORDER BY balance DESC"
   <?php endforeach; ?>
   </tbody></table>
 </div>
-<?php require __DIR__.'/inc/footer.php'; ?>
+
+<?php require_once __DIR__ . '/footer.php'; ?>
+

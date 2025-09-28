@@ -1,6 +1,9 @@
-<?php $page = 'purchase_system.php';  require_once __DIR__ . '/header.php'; require_once __DIR__ . '/inc/auth.php';?>
-<?php
+<?php 
+$page = 'purchase_system.php';  
+require_once __DIR__ . '/header.php'; 
+require_once __DIR__ . '/inc/auth.php';
 require __DIR__.'/inc/config.php';
+
 $page_title = "Purchases";
 $suppliers = $pdo->query("SELECT id, name FROM suppliers ORDER BY name")->fetchAll();
 
@@ -23,7 +26,7 @@ $stmt = $pdo->prepare($sql);
 $stmt->execute($args);
 $rows = $stmt->fetchAll();
 
-require __DIR__.'/inc/header.php';
+
 ?>
 <div class="card">
   <h2>Purchases</h2>
@@ -59,5 +62,4 @@ require __DIR__.'/inc/header.php';
     </tbody>
   </table>
 </div>
-<?php require __DIR__.'/inc/footer.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>

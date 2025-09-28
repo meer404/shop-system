@@ -9,13 +9,14 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <html lang="en">
 <head>
   <meta charset="utf-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- relative path so it works in any subfolder; cache-bust -->
   <link href="styles.css?v=9" rel="stylesheet">
 </head>
 <body>
 
+<!-- Mobile Menu Toggle Button -->
+<button class="mobile-menu-toggle">☰</button>
 
 <div class="app">
   <aside class="sidebar">
@@ -49,13 +50,15 @@ if (session_status() === PHP_SESSION_NONE) session_start();
     <div class="sidebar-bottom">
       <?php if (!empty($_SESSION['user_id'])): ?>
         <div class="user-row">
-          <span class="badge">👤 <?= htmlspecialchars($_SESSION['username']) ?></span>
+          <span class="badge">👤 <?= htmlspecialchars($_SESSION['username'] ?? 'User') ?></span>
         </div>
-        <a href="logout.php" class="logout-btn"><span>🚪</span><b>Logout</b></a>
+        <a href="logout.php" class="logout-btn"><span>🔑</span> Logout</a>
       <?php else: ?>
-        <a href="login.php" class="login-btn"><span>🔑</span><b>Login</b></a>
+        <a href="login.php" class="login-btn"><span>🔑</span> Login</a>
       <?php endif; ?>
     </div>
   </aside>
 
   <main class="content">
+    <?php if (!empty($success)): ?><div class="success"><?= $success ?></div><?php endif; ?>
+    <?php if (!empty($error)): ?><div class="danger"><?= $error ?></div><?php endif; ?>

@@ -1,27 +1,32 @@
-<?php $page = 'purchase_system.php';  require_once __DIR__ . '/header.php'; require_once __DIR__ . '/inc/auth.php';?>
-<?php
+<?php 
+$page = 'purchase_system.php';  
+require_once __DIR__ . '/header.php'; 
+require_once __DIR__ . '/inc/auth.php';
 require __DIR__.'/inc/config.php';
 $page_title = "Suppliers";
 $msg = null;
+$error = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $name = trim($_POST['name'] ?? '');
   $phone = trim($_POST['phone'] ?? '');
   if ($name === '') {
-    $msg = "Name is required.";
+    $error = "Name is required.";
   } else {
-    $pdo->prepare("INSERT INTO suppliers (name, phone) VALUES (?,?)")->execute([$name,$phone]);
-    $msg = "Supplier saved.";
+    // Corrected the database query syntax
+    $stmt = $pdo->prepare("INSERT INTO suppliers (name, phone) VALUES (?,?)");
+    $stmt->execute([$name, $phone]);
+    $msg = "Supplier saved successfully.";
   }
 }
 
+// Removed the duplicate h() function and the extra header include
 $rows = $pdo->query("SELECT * FROM suppliers ORDER BY created_at DESC, id DESC")->fetchAll();
-
-require __DIR__.'/inc/header.php';
 ?>
 <div class="card">
   <h2>Add Supplier</h2>
   <?php if ($msg): ?><p class="success"><?= h($msg) ?></p><?php endif; ?>
+  <?php if ($error): ?><p class="danger"><?= h($error) ?></p><?php endif; ?>
   <form method="post" action="suppliers.php">
       <div class="form-row">
       <div style="flex:1">
@@ -42,7 +47,7 @@ require __DIR__.'/inc/header.php';
   <table>
     <thead><tr><th>#</th><th>Name</th><th>Phone</th></tr></thead>
     <tbody>
-      <?php foreach($rows as $r): ?>
+      <?php foreach ($rows as $r): ?>
       <tr>
         <td><?= (int)$r['id'] ?></td>
         <td><?= h($r['name']) ?></td>
@@ -52,5 +57,5 @@ require __DIR__.'/inc/header.php';
     </tbody>
   </table>
 </div>
-<?php require __DIR__.'/inc/footer.php'; ?>
 <?php require_once __DIR__ . '/footer.php'; ?>
+

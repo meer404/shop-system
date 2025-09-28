@@ -614,5 +614,5 @@ require __DIR__.'/inc/header.php';
   <?php endif; ?>
 </div>
 
-<?php require __DIR__.'/inc/footer.php'; ?>
+
 <?php require_once __DIR__ . '/footer.php'; ?>

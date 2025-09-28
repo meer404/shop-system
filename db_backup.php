@@ -27,26 +27,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['download_backup'])) {
     // Get all tables
     $tables = $pdo->query("SHOW TABLES")->fetchAll(PDO::FETCH_COLUMN);
 
-    // Loop through tables
     foreach ($tables as $table) {
-        // Get table structure
         fwrite($handle, "DROP TABLE IF EXISTS `$table`;\n");
-        $create_table_stmt = $pdo->query("SHOW CREATE TABLE `$table`")->fetch(PDO::FETCH_ASSOC);
-        fwrite($handle, $create_table_stmt['Create Table'] . ";\n\n");
+        $create_table = $pdo->query("SHOW CREATE TABLE `$table`")->fetch(PDO::FETCH_ASSOC);
+        fwrite($handle, $create_table['Create Table'] . ";\n\n");
         
-        // Get table data
-        $rows_stmt = $pdo->query("SELECT * FROM `$table`");
-        $num_fields = $rows_stmt->columnCount();
-
-        while ($row = $rows_stmt->fetch(PDO::FETCH_ASSOC)) {
+        $rows = $pdo->query("SELECT * FROM `$table`");
+        while ($row = $rows->fetch(PDO::FETCH_ASSOC)) {
             fwrite($handle, "INSERT INTO `$table` VALUES(");
             $values = [];
             foreach ($row as $value) {
-                if (is_null($value)) {
+                if ($value === null) {
                     $values[] = "NULL";
                 } else {
-                    // Escape special characters and wrap in single quotes
-                    $values[] = "'" . addslashes($value) . "'";
+                    $values[] = "'" . $pdo->quote($value) . "'";
                 }
             }
             fwrite($handle, implode(', ', $values));
@@ -64,11 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['download_backup'])) {
 
 
 // This part of the code displays the page itself.
-$page = 'backup.php';
+$page = 'db_backup.php';
 require_once __DIR__ . '/header.php';
 
 $page_title = "Database Backup";
-require __DIR__ . '/inc/header.php';
 ?>
 
 <div class="card">
@@ -82,14 +75,11 @@ require __DIR__ . '/inc/header.php';
         <p style="margin-top: 10px;"><strong>It is highly recommended to perform backups regularly and store the downloaded file in a secure, separate location.</strong></p>
         
         <div style="margin-top: 25px; text-align: center;">
-            <a href="download_backup.php" class="btn" style="padding: 15px 30px; font-size: 1.2em;">
-            💾 Download Database Backup
-            </a>
+            <form method="post" action="db_backup.php" style="display: inline;">
+                <button type="submit" name="download_backup" class="btn btn-primary">Download Database Backup</button>
+            </form>
         </div>
     </div>
 </div>
 
-<?php 
-require __DIR__ . '/inc/footer.php'; 
-require_once __DIR__ . '/footer.php'; 
-?>
+<?php require_once __DIR__ . '/footer.php'; ?>
