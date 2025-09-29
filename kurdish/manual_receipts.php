@@ -1,8 +1,8 @@
 <?php 
 $page = '3arz_system.php'; 
-require_once __DIR__ . '/header.php'; 
-require_once __DIR__ . '/inc/auth.php';
-require_once __DIR__ . '/inc/config.php';
+require_once 'header.php'; 
+require_once '../inc/auth.php';
+require_once '../inc/config.php';
 
 /* ---- Normalize PDO handle ($pdo) ---- */
 if (!isset($pdo) || !($pdo instanceof PDO)) {
@@ -519,7 +519,7 @@ $flash_error   = $_SESSION['flash_error'] ?? '';
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
 $page_title = "Manual Receipts";
-require __DIR__.'/inc/header.php';
+
 ?>
 
 <div class="card">
@@ -615,4 +615,4 @@ require __DIR__.'/inc/header.php';
 </div>
 
 
-<?php require_once __DIR__ . '/footer.php'; ?>
+<?php require_once 'footer.php'; ?>

@@ -7,8 +7,8 @@
  */
 $page = 'point_system.php';
 
-require_once __DIR__ . '/inc/config.php'; // Needed for both modes
-require_once __DIR__ . '/inc/auth.php';   // Needed for both modes
+require_once '../inc/config.php'; // Needed for both modes
+require_once '../inc/auth.php';   // Needed for both modes
 
 function safe($v){ return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 
@@ -167,7 +167,7 @@ $flash_error = $_SESSION['flash_error'] ?? '';
 unset($_SESSION['flash_success'], $_SESSION['flash_error']);
 
 $page_title = "Point Receipts";
-require __DIR__ . '/inc/header.php'; // This is for the page title in the header
+
 ?>
 
 <div class="card">
@@ -220,6 +220,6 @@ require __DIR__ . '/inc/header.php'; // This is for the page title in the header
 </div>
 
 <?php 
-require __DIR__ . '/inc/footer.php'; 
-require_once __DIR__ . '/footer.php'; 
+
+require_once 'footer.php'; 
 ?>

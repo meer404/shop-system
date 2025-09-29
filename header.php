@@ -21,7 +21,7 @@ if (session_status() === PHP_SESSION_NONE) session_start();
 <div class="app">
   <aside class="sidebar">
      <h2 class="logo">
-      <img src="images/new_logo.jpg" alt="Logo" style="width: 60px; height: 60px; vertical-align: middle;">
+      <img src="images/new_logo.png" alt="Logo" style="width: 60px; height: 60px; vertical-align: middle;">
       Control Board
     </h2>
 
