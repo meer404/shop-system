@@ -6,7 +6,7 @@ function is_active($needle){ global $page; return (strpos($page, $needle) !== fa
 if (session_status() === PHP_SESSION_NONE) session_start();
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="ku"  >
 <head>
   <meta charset="utf-8">
   <title>Control Board</title>
@@ -15,24 +15,28 @@ if (session_status() === PHP_SESSION_NONE) session_start();
   <link href="styles.css?v=9" rel="stylesheet">
 </head>
 <body>
+
+  <button class="mobile-menu-toggle">☰</button>
+
 <div class="app">
   <aside class="sidebar">
     <h2 class="logo">
-      <img src="../images/logo.png" alt="Logo" style="width: 60px; height: 60px; vertical-align: middle;">
+      <img src="../images/new_logo.png" alt="Logo" style="width: 60px; height: 60px; vertical-align: middle;">
       Control Board
     </h2>
 
-    <nav>
+    <nav  dir="rtl">
       <a href="index.php"<?=is_active('index.php')?>><span>🏠</span><b>پەڕەی سەرەکی</b></a>
       <a href="customers.php"<?=is_active('customers.php')?>><span>👤</span><b>كڕیاران</b></a>
       <a href="products.php"<?=is_active('products.php')?>><span>📦</span><b>کالاكان</b></a>
-      <a href="sale_new.php"<?=is_active('sale_new.php')?>><span>🧾</span><b>فرۆشتنی نوێ</b></a>
-      <a href="purchases.php"<?=is_active('purchases.php')?>><span>📥</span><b>کڕین</b></a>
-      <a href="payments.php"<?=is_active('payments.php')?>><span>💰</span><b>پارەدان</b></a>
-      <a href="receipts.php"<?=is_active('receipts.php')?>><span>🖨️</span><b>وەسڵەکان</b></a>
-      <a href="suppliers.php"<?=is_active('suppliers.php')?>><span>🏭</span><b>فرۆشیاران</b></a>
-      <a href="purchase_new.php"<?=is_active('purchase_new.php')?>><span>🛒</span><b>کڕینی کاڵا </b></a>
-      <a href="stats.php"<?=is_active('stats.php')?>><span>📈</span><b>ئامار</b></a>
+      <a href="sale_system.php"<?=is_active('sale_system.php')?>><span>🧾</span><b> فرۆشتن</b></a>
+      
+      <a href="purchase_system.php"<?=is_active('purchase_system.php')?>><span>🛒</span><b>کڕین</b></a>
+      
+      <a href="3arz_system.php"<?=is_active('3arz_system.php')?>><span>📋</span><b> عەرز</b></a>
+      <a href="point_system.php"<?=is_active('point_system.php')?> ><span>⭐</span><b> زەرعە</b></a>
+      <a href="stats.php"<?=is_active('stats.php')?> ><span>📈</span><b>ئامار</b></a>
+      <a href="db_backup.php"<?=is_active('db_backup.php')?>><span>💾</span><b>باکئەپ</b></a>
 
       <div class="dropdown lang-dropdown">
       <a href="#" class="dropdown-toggle"><span>🌐</span><b>زمانەکان</b></a>

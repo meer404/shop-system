@@ -452,7 +452,7 @@ $note = $sale['note'] ?? '';
       <div class="company-header">
         <h1>پسولەی فرۆشتن</h1>
         <div class="bilingual">
-           <img src="../images/Logo.png" alt="لۆگۆی کۆمپانیا" style="max-width: 150px;">
+           <img src="../images/new_logo.png" alt="لۆگۆی کۆمپانیا" style="max-width: 150px;">
           <div class="company-info">
             بۆردی کۆنترۆڵ<br>
             سلێمانی - چوارباخ خوار فولکەی مامە ڕیشە<br>

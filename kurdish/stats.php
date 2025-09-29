@@ -8,8 +8,6 @@ if (!isset($pdo) || !($pdo instanceof PDO)) {
 
 $page = 'stats.php';
 require_once __DIR__ . '/header.php';
-
-/* Date range (default: last 30 days) */
 $from = (isset($_GET['from']) && preg_match('~^\d{4}-\d{2}-\d{2}$~', $_GET['from']))
           ? $_GET['from'] : date('Y-m-d', strtotime('-30 days'));
 $to   = (isset($_GET['to']) && preg_match('~^\d{4}-\d{2}-\d{2}$~', $_GET['to']))
@@ -90,36 +88,39 @@ foreach ($labels as $d) {
 $profit = (float)$salesTotals['amount'] - (float)$purchaseTotals['amount'];
 $profitPercent = $purchaseTotals['amount'] > 0 ? (($profit / (float)$purchaseTotals['amount']) * 100) : 0;
 ?>
-
 <style>
 :root {
-    --bg-primary: #0f0f23;
-    --bg-secondary: #1a1a2e;
-    --bg-tertiary: #16213e;
-    --bg-card: rgba(26, 26, 46, 0.8);
-    --text-primary: #ffffff;
-    --text-secondary: #b8bcc8;
-    --text-muted: #6c757d;
-    --accent-primary: #00d4ff;
-    --accent-secondary: #7c3aed;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-tertiary: #f3f4f6;
+    --bg-card: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #9ca3af;
+    --accent-primary: #6366f1;
+    --accent-secondary: #8b5cf6;
+    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --gradient-secondary: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
     --success: #10b981;
     --danger: #ef4444;
     --warning: #f59e0b;
-    --border-color: rgba(255, 255, 255, 0.1);
-    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    --info: #3b82f6;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
 }
 
 body {
-    background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     color: var(--text-primary);
     min-height: 100vh;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 .dashboard-container {
-    background: var(--bg-primary);
+    background: transparent;
     min-height: 100vh;
     padding: 1rem;
 }
@@ -128,7 +129,7 @@ body {
     background: var(--bg-card);
     backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 16px;
     color: var(--text-primary);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     box-shadow: var(--shadow-md);
@@ -142,8 +143,8 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    height: 3px;
+    background: var(--gradient-primary);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -154,7 +155,7 @@ body {
 
 .stats-card:hover {
     transform: translateY(-8px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
     border-color: var(--accent-primary);
 }
 
@@ -167,7 +168,7 @@ body {
 }
 
 .stats-card.profit::before {
-    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    background: var(--gradient-primary);
 }
 
 .stats-card.profit.negative::before {
@@ -176,45 +177,46 @@ body {
 
 .stats-icon {
     font-size: 2.5rem;
-    opacity: 0.7;
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0.9;
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .stats-card.sales .stats-icon {
     background: linear-gradient(135deg, var(--success), #34d399);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .stats-card.purchases .stats-icon {
     background: linear-gradient(135deg, var(--warning), #fbbf24);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .stats-card.profit.negative .stats-icon {
     background: linear-gradient(135deg, var(--danger), #f87171);
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .chart-container {
     background: var(--bg-card);
     backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 16px;
     box-shadow: var(--shadow-md);
     transition: all 0.3s ease;
 }
 
 .chart-container:hover {
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
     border-color: var(--accent-primary);
 }
 
@@ -222,15 +224,15 @@ body {
     background: var(--bg-card);
     backdrop-filter: blur(10px);
     border: 1px solid var(--border-color);
-    border-radius: 20px;
+    border-radius: 16px;
     box-shadow: var(--shadow-md);
     padding: 2rem;
 }
 
 .btn-custom {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    background: var(--gradient-primary);
     border: none;
-    border-radius: 15px;
+    border-radius: 8px;
     padding: 12px 24px;
     font-weight: 600;
     color: white;
@@ -240,13 +242,13 @@ body {
 
 .btn-custom:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 20px rgba(0, 212, 255, 0.4);
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
     filter: brightness(1.1);
     color: white;
 }
 
 .page-header {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -256,18 +258,18 @@ body {
 }
 
 .form-control {
-    background: var(--bg-tertiary);
+    background: var(--bg-primary);
     border: 2px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 8px;
     color: var(--text-primary);
     transition: all 0.3s ease;
     padding: 12px 16px;
 }
 
 .form-control:focus {
-    background: var(--bg-tertiary);
+    background: var(--bg-primary);
     border-color: var(--accent-primary);
-    box-shadow: 0 0 0 0.2rem rgba(0, 212, 255, 0.25);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     color: var(--text-primary);
 }
 
@@ -284,10 +286,10 @@ body {
 .metric-label {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
 }
 
 .metric-value {
@@ -299,20 +301,20 @@ body {
 
 .metric-change {
     font-size: 0.85rem;
-    color: var(--text-secondary);
-    opacity: 0.8;
+    color: var(--text-muted);
+    opacity: 0.9;
 }
 
 .btn-group .btn {
     background: var(--bg-tertiary);
-    border: 1px solid var(--border-color);
+    border: 2px solid var(--border-color);
     color: var(--text-secondary);
     transition: all 0.3s ease;
 }
 
 .btn-group .btn.active,
 .btn-group .btn:hover {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    background: var(--gradient-primary);
     border-color: var(--accent-primary);
     color: white;
 }
@@ -333,126 +335,75 @@ body {
     color: var(--text-muted) !important;
 }
 
-/* Responsive Design */
+/* Chart.js light theme configuration - Add to your JavaScript */
+/* 
+Chart.defaults.color = '#4b5563';
+Chart.defaults.borderColor = '#e5e7eb';
+Chart.defaults.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+*/
+
+/* Responsive adjustments remain the same */
 @media (max-width: 1200px) {
-    .dashboard-container {
-        padding: 0.75rem;
-    }
-    
-    .metric-value {
-        font-size: clamp(1.25rem, 2.5vw, 1.8rem);
-    }
-    
-    .stats-icon {
-        font-size: 2rem;
-    }
+    .dashboard-container { padding: 0.75rem; }
+    .metric-value { font-size: clamp(1.25rem, 2.5vw, 1.8rem); }
+    .stats-icon { font-size: 2rem; }
 }
 
 @media (max-width: 768px) {
-    .dashboard-container {
-        padding: 0.5rem;
-    }
-    
-    .date-filter {
-        padding: 1.5rem;
-    }
-    
-    .stats-card {
-        margin-bottom: 1rem;
-    }
-    
-    .metric-value {
-        font-size: 1.5rem;
-    }
-    
-    .stats-icon {
-        font-size: 1.75rem;
-    }
-    
-    .chart-container .card-body {
-        padding: 1rem;
-    }
-    
-    .btn-custom {
-        padding: 10px 20px;
-        font-size: 0.9rem;
-    }
+    .dashboard-container { padding: 0.5rem; }
+    .date-filter { padding: 1.5rem; }
+    .stats-card { margin-bottom: 1rem; }
+    .metric-value { font-size: 1.5rem; }
+    .stats-icon { font-size: 1.75rem; }
+    .chart-container .card-body { padding: 1rem; }
+    .btn-custom { padding: 10px 20px; font-size: 0.9rem; }
 }
 
 @media (max-width: 576px) {
-    .page-header {
-        font-size: 1.5rem;
-        text-align: center;
-    }
-    
-    .metric-value {
-        font-size: 1.25rem;
-    }
-    
-    .stats-icon {
-        font-size: 1.5rem;
-    }
-    
-    .date-filter {
-        padding: 1rem;
-    }
-    
-    .chart-container {
-        border-radius: 15px;
-    }
-    
-    .stats-card {
-        border-radius: 15px;
-    }
+    .page-header { font-size: 1.5rem; text-align: center; }
+    .metric-value { font-size: 1.25rem; }
+    .stats-icon { font-size: 1.5rem; }
+    .date-filter { padding: 1rem; }
+    .chart-container, .stats-card { border-radius: 12px; }
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
+/* Custom scrollbar for light theme */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-tertiary); }
+::-webkit-scrollbar-thumb { 
+    background: var(--gradient-primary); 
+    border-radius: 4px; 
 }
+::-webkit-scrollbar-thumb:hover { filter: brightness(1.2); }
 
-::-webkit-scrollbar-track {
-    background: var(--bg-secondary);
-}
-
-::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    filter: brightness(1.2);
-}
-
-/* Loading animation */
-.loading-shimmer {
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-    animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
-}
-
-/* Chart responsive containers */
-.chart-responsive {
-    position: relative;
-    height: 300px;
-}
-
-@media (min-width: 768px) {
-    .chart-responsive {
-        height: 400px;
-    }
-}
-
-@media (min-width: 1200px) {
-    .chart-responsive {
-        height: 450px;
-    }
-}
+/* Update Chart.js configuration in the JavaScript section */
 </style>
+
+<!-- Also update the Chart.js configuration in stats.php JavaScript section: -->
+<script>
+// Update these Chart.js defaults for light theme:
+Chart.defaults.color = '#4b5563';
+Chart.defaults.borderColor = '#e5e7eb';
+Chart.defaults.backgroundColor = 'rgba(99, 102, 241, 0.1)';
+Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+
+// Update Chart.js defaults
+Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+Chart.defaults.plugins.tooltip.titleColor = '#111827';
+Chart.defaults.plugins.tooltip.bodyColor = '#4b5563';
+Chart.defaults.plugins.tooltip.borderColor = '#6366f1';
+Chart.defaults.plugins.tooltip.borderWidth = 1;
+Chart.defaults.plugins.tooltip.cornerRadius = 8;
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.titleFont.size = fontSize;
+Chart.defaults.plugins.tooltip.bodyFont.size = fontSize;
+
+Chart.defaults.scales.grid.color = 'rgba(229, 231, 235, 0.5)';
+Chart.defaults.scales.grid.drawBorder = false;
+
+Chart.defaults.scales.ticks.font.size = fontSize;
+Chart.defaults.scales.ticks.color = '#6b7280';
+</script>
 
 <div class="dashboard-container">
     <div class="container-fluid">
