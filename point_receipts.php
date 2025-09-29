@@ -82,7 +82,7 @@ if (isset($_GET['view_receipt'])) {
     <body>
       <div class="receipt-wrapper">
         <div class="header-section">
-          <div class="company-header"><h1>پسوڵەی خاڵ</h1><div class="bilingual"><img src="images/Logo.png" alt="Company Logo" style="max-width: 150px;"><div class="company-info">Control Board<br>سلێمانی - چوارباخ خوار فولکەی مامە ڕیشە<br>Phone: 07732828287 - 00722142666 <br>Email: jumaarasoul3@gmail.com</div></div></div>
+          <div class="company-header"><h1>پسوڵەی خاڵ</h1><div class="bilingual"><img src="images/new_logo.png" alt="Company Logo" style="max-width: 150px;"><div class="company-info">Control Board<br>سلێمانی - چوارباخ خوار فولکەی مامە ڕیشە<br>Phone: 07732828287 - 00722142666 <br>Email: jumaarasoul3@gmail.com</div></div></div>
         </div>
         <div class="receipt-details">
           <div class="detail-group"><span class="detail-label">Date:</span><span class="detail-value"><?= safe(date('d/m/Y', strtotime($receipt['receipt_date']))) ?></span></div>

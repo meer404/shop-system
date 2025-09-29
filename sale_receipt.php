@@ -450,7 +450,7 @@ $note = $sale['note'] ?? '';
       <div class="company-header">
         <h1>پسوڵەی فرۆشتن</h1>
         <div class="bilingual">
-           <img src="images/Logo.png" alt="Company Logo" style="max-width: 150px;">
+           <img src="images/new_Logo.png" alt="Company Logo" style="max-width: 150px;">
           <div class="company-info">
             Control Board<br>
             سلێمانی - چوارباخ خوار فولکەی مامە ڕیشە<br>

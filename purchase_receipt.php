@@ -112,9 +112,9 @@ function safe($v){ return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
   <div class="receipt-wrapper">
     <div class="header-section">
       <div class="company-header">
-        <h1>ใบเสร็จการซื้อ</h1>
+        
         <div class="bilingual">
-           <img src="images/Logo.png" alt="Company Logo" style="max-width: 150px;">
+           <img src="images/new_logo.png" alt="Company Logo" style="max-width: 150px;">
           <div class="company-info">
             Control Board<br>
             سلێمانی - چوارباخ خوار فولکەی مامە ڕیشە<br>
