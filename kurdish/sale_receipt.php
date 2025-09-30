@@ -403,25 +403,27 @@ $note = $sale['note'] ?? '';
     
     /* Print Styles */
     @media print {
+      /* This rule forces browsers to print background colors and images */
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      
       body {
         padding: 0;
-        background: #fff;
       }
       
       .receipt-wrapper {
-        border: 1px solid #000;
         max-width: 100%;
         box-shadow: none;
+        /* The original colored border will be used automatically */
       }
       
       .print-actions {
         display: none;
       }
       
-      .items-table th,
-      .items-table td {
-        border: 1px solid #000;
-      }
+      /* The original colored borders for the table and other elements will be used */
       
       .header-section {
         margin: -20px -20px 15px -20px;
@@ -447,24 +449,23 @@ $note = $sale['note'] ?? '';
 </head>
 <body>
   <div class="receipt-wrapper">
-    <!-- Header -->
     <div class="header-section">
       <div class="company-header">
         <h1>پسولەی فرۆشتن</h1>
         <div class="bilingual">
            <img src="../images/new_logo.png" alt="لۆگۆی کۆمپانیا" style="max-width: 150px;">
           <div class="company-info">
-            بۆردی کۆنترۆڵ<br>
+            CONTROL BOARD <br>
             سلێمانی - چوارباخ خوار فولکەی مامە ڕیشە<br>
-            تەلەفۆن: 07732828287 - 00722142666 <br>
+            ژمارە مۆبایل: 07732828287 - 00722142666 <br>
              ئیمەیڵ: jumaarasoul3@gmail.com
           </div>
          
         </div>
+        <p>کۆمپانیایی CONTROL BOARD بۆ دروستکردنی بۆردی کارەبایی و دیزاین و جێبەجێکردنی پڕۆژەکان</p>
       </div>
     </div>
     
-    <!-- Receipt Details -->
     <div class="receipt-details">
       <div class="detail-group">
         <span class="detail-label">بەروار:</span>
@@ -480,7 +481,6 @@ $note = $sale['note'] ?? '';
       </div>
     </div>
     
-    <!-- Customer Information -->
     <div class="customer-section">
       <div class="customer-field">
         <span class="detail-label">کڕیار:</span>
@@ -496,7 +496,6 @@ $note = $sale['note'] ?? '';
       </div>
     </div>
     
-    <!-- Items Table -->
     <table class="items-table">
       <thead>
         <tr>
@@ -524,7 +523,6 @@ $note = $sale['note'] ?? '';
       </tbody>
     </table>
     
-    <!-- Totals Section -->
     <div class="totals-section">
       <div class="totals-grid">
         <div class="totals-box">
@@ -559,7 +557,6 @@ $note = $sale['note'] ?? '';
       </div>
     </div>
     
-    <!-- Note Section -->
     <?php if ($note !== ''): ?>
     <div class="note-section">
       <div class="note-label">تێبینی:</div>
@@ -567,7 +564,6 @@ $note = $sale['note'] ?? '';
     </div>
     <?php endif; ?>
     
-    <!-- Footer Section -->
     <div class="footer-section">
       <div class="print-info">
         لاپەڕەی ١ لە ١ | کات <?= date('d/m/Y h:i:s A') ?> | چاپکراو لەلایەن: بەڕێوبەر
@@ -586,7 +582,6 @@ $note = $sale['note'] ?? '';
     </div>
   </div>
   
-  <!-- Print Actions - Outside the receipt wrapper -->
   <div class="print-actions">
     <button onclick="window.print()">چاپکردنی وەصڵ</button>
     <a href="receipts.php">هەموو وەصڵەکان</a>

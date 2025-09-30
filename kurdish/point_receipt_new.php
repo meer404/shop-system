@@ -24,9 +24,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_receipt'])) {
         $place = trim($_POST['place'] ?? '');
         $phone = trim($_POST['phone'] ?? '');
         $note = trim($_POST['note'] ?? '');
-        
+
         if (empty($receipt_name) || empty($receipt_date)) {
-            throw new Exception("Receipt Name and Date are required.");
+            throw new Exception("ناوی پسوڵە و بەروار پێویستن.");
         }
 
         // Line items
@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_receipt'])) {
             $stmt = $pdo->prepare("SELECT name FROM point_items WHERE id = ?");
             $stmt->execute([$item_id]);
             $item = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$item) continue; 
+            if (!$item) continue;
 
             $item_points = (float)($item_points_manual[$i] ?? 0);
             $item_price  = (float)($item_prices_manual[$i] ?? 0);
@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_receipt'])) {
         }
 
         if (count($rows) === 0) {
-            throw new Exception("Add at least one valid item to the receipt.");
+            throw new Exception("لانیکەم یەک کاڵای دروست بۆ پسوڵەکە زیاد بکە.");
         }
 
         // Insert main receipt record
@@ -95,78 +95,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_receipt'])) {
 }
 
 
-$page_title = "New Point Receipt";
+$page_title = "پسوڵەی خاڵی نوێ";
 
 ?>
 
 <?php if ($success): ?>
-    <div class="success">Saved successfully! <a class="btn btn-small" href="<?= safe($success) ?>">Open Receipt</a></div>
+    <div class="success">بە سەرکەوتوویی پاشەکەوت کرا! <a class="btn btn-small" href="<?= safe($success) ?>">کردنەوەی پسوڵە</a></div>
 <?php endif; ?>
 <?php if ($error): ?>
-    <div class="danger"><strong>Error:</strong> <?= safe($error) ?></div>
+    <div class="danger"><strong>هەڵە:</strong> <?= safe($error) ?></div>
 <?php endif; ?>
 
 <form method="post" id="receiptForm">
     <div class="card">
-        <h2>Receipt Details</h2>
+        <h2>وردەکارییەکانی پسوڵە</h2>
         <div class="form-row">
             <div>
-                <label>Receipt Name</label>
-                <input type="text" name="receipt_name" placeholder="e.g., Customer Name or Project" required>
+                <label>ناوی پسوڵە</label>
+                <input type="text" name="receipt_name" placeholder="بۆ نموونە، ناوی کڕیار یان پڕۆژە" required>
             </div>
             <div>
-                <label>Date</label>
+                <label>بەروار</label>
                 <input type="date" name="receipt_date" value="<?= date('Y-m-d') ?>" required>
             </div>
             <div>
-                <label>Default Price per Point</label>
+                <label>نرخی بنەڕەت بۆ هەر خاڵێک</label>
                 <input type="number" id="master_price_setter" min="0" step="0.01" value="0.00" style="text-align:right;">
             </div>
         </div>
         <div class="form-row">
             <div>
-                <label>Place (optional)</label>
-                <input type="text" name="place" placeholder="e.g., City, Branch">
+                <label>شوێن (ئارەزوومەندانە)</label>
+                <input type="text" name="place" placeholder="بۆ نموونە، شار، لق">
             </div>
             <div>
-                <label>Phone Number (optional)</label>
-                <input type="text" name="phone" placeholder="e.g., 0770 123 4567">
+                <label>ژمارەی تەلەفۆن (ئارەزوومەندانە)</label>
+                <input type="text" name="phone" placeholder="بۆ نموونە، ٠٧٧٠ ١٢٣ ٤٥٦٧">
             </div>
         </div>
          <div class="form-row">
             <div style="width:100%">
-                 <label>Note (optional)</label>
-                <textarea name="note" placeholder="Any additional notes about this receipt" style="width:100%; min-height: 60px;"></textarea>
+                 <label>تێبینی (ئارەزوومەندانە)</label>
+                <textarea name="note" placeholder="هەر تێبینییەکی زیادە دەربارەی ئەم پسوڵەیە" style="width:100%; min-height: 60px;"></textarea>
             </div>
         </div>
     </div>
 
     <div class="card">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h2>Items</h2>
+            <h2>کاڵاکان</h2>
             <div>
-                <button type="button" class="btn" onclick="addRow()">+ Add Item</button>
-                <button type="submit" name="save_receipt" class="btn">Save Receipt</button>
+                <button type="button" class="btn" onclick="addRow()">+ زیادکردنی کاڵا</button>
+                <button type="submit" name="save_receipt" class="btn">پاشەکەوتکردنی پسوڵە</button>
             </div>
         </div>
 
         <table id="itemsTbl">
             <thead>
                 <tr>
-                    <th style="width:25%">Item Name</th>
-                    <th style="width:10%">Qty</th>
-                    <th style="width:10%">Points</th>
-                    <th style="width:15%">Price per Point</th>
-                    <th style="width:15%">Total Points</th>
-                    <th style="width:15%">Line Total</th>
-                    <th style="width:10%">Actions</th>
+                    <th style="width:25%">ناوی کاڵا</th>
+                    <th style="width:10%">بڕ</th>
+                    <th style="width:10%">خاڵەکان</th>
+                    <th style="width:15%">نرخ بۆ هەر خاڵێک</th>
+                    <th style="width:15%">کۆی خاڵەکان</th>
+                    <th style="width:15%">کۆی گشتی</th>
+                    <th style="width:10%">کردارەکان</th>
                 </tr>
             </thead>
             <tbody id="itemsBody">
                 </tbody>
         </table>
          <div class="form-row" style="justify-content: flex-end; margin-top: 1rem;">
-            <span class="badge">Grand Total: <strong id="totalText">$0.00</strong></span>
+            <span class="badge">کۆی گشتی: <strong id="totalText">$0.00</strong></span>
         </div>
     </div>
 </form>
@@ -220,7 +220,6 @@ function attachRowHandlers(tr) {
     
     allInputs.forEach(input => {
         input.addEventListener('input', () => {
-            // If the item dropdown changes, only populate the item's default POINTS.
             if (input.name === 'item_id[]') {
                 const selectedId = input.value;
                 const item = itemsData.find(i => i.id == selectedId);
@@ -243,13 +242,11 @@ function attachRowHandlers(tr) {
 
 function addRow() {
     const tr = document.createElement('tr');
-    let optionsHtml = '<option value="">-- Select Item --</option>';
+    let optionsHtml = '<option value="">-- هەڵبژاردنی کاڵا --</option>';
     itemsData.forEach(item => {
         optionsHtml += `<option value="${item.id}">${escapeHTML(item.name)}</option>`;
     });
 
-    // **THIS IS THE FIX**
-    // Always get the price from the master price setter field at the top.
     const defaultPrice = money(masterPriceSetterEl.value);
 
     tr.innerHTML = `
@@ -268,7 +265,6 @@ function addRow() {
     tr.querySelector('select[name="item_id[]"]').focus();
 }
 
-// Event listener for the master price setter
 masterPriceSetterEl.addEventListener('input', () => {
     const newPrice = money(masterPriceSetterEl.value);
     itemsTbody.querySelectorAll('tr').forEach(tr => {
@@ -283,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (itemsData.length > 0) {
        addRow();
     } else {
-        itemsTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No point items have been created yet. <a href="point_items.php">Create one first</a>.</td></tr>';
+        itemsTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">هیچ کاڵایەکی خاڵدار هێشتا دروست نەکراوە. <a href="point_items.php">سەرەتا یەکێک دروست بکە</a>.</td></tr>';
     }
 });
 </script>

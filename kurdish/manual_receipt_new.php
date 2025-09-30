@@ -1,11 +1,11 @@
 <?php
 // manual_receipt_new.php
-$page = '3arz_system.php'; 
+$page = '3arz_system.php';
 
 if (session_status() === PHP_SESSION_NONE) session_start();
 
 // Core includes
-require_once 'header.php'; 
+require_once 'header.php';
 require_once '../inc/auth.php';
 require_once '../inc/config.php';
 
@@ -13,7 +13,7 @@ function safe($v){ return htmlspecialchars($v, ENT_QUOTES, 'UTF-8'); }
 
 $success = $_GET['success'] ?? '';
 $error   = $_GET['error'] ?? '';
-$page_title = "New Manual Receipt";
+$page_title = "پسوڵەی دەستی نوێ";
 
 // ====== POST handler moved to the top before any HTML output ======
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
       $rows[] = ['name'=>$nm, 'brand'=>$b, 'qty'=>$q, 'price'=>$p, 'line'=>$line];
     }
 
-    if (count($rows) === 0) throw new Exception('Add at least one valid item.');
+    if (count($rows) === 0) throw new Exception('لانیکەم یەک کاڵای دروست زیاد بکە.');
 
     $pdo->beginTransaction();
 
@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 
     $pdo->commit();
 
-    $url = 'manual_receipt.php?id=' . $rid;
+    $url = 'manual_receipts.php?view_receipt=' . $rid;
     header('Location: manual_receipt_new.php?success=' . urlencode($url));
     exit;
   } catch (Throwable $e) {
@@ -81,11 +81,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 <link href="receipt.css?v=13" rel="stylesheet">
 
 <div class="card">
-  <h2 class="gradient-text">New Manual Receipt</h2>
-  
+  <h2 class="gradient-text">پسوڵەی دەستی نوێ</h2>
+
 
   <?php if ($success): ?>
-    <div class="success">Saved! <a class="btn btn-small" href="<?= safe($success) ?>">Open Receipt</a></div>
+    <div class="success">پاشەکەوت کرا! <a class="btn btn-small" href="<?= safe($success) ?>">کردنەوەی پسوڵە</a></div>
   <?php endif; ?>
   <?php if ($error): ?>
     <div class="danger"><?= safe($error) ?></div>
@@ -93,21 +93,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 
   <form method="post" id="manualForm">
     <div class="form-row">
-      <label>Note (optional):</label>
-      <input type="text" name="note" placeholder="e.g., Walk-in customer">
-      <button type="button" class="btn" onclick="addRow()">+ Add Item</button>
-      <button type="submit" name="save" class="btn">Save & Open Receipt</button>
+      <label>تێبینی (ئارەزوومەندانە):</label>
+      <input type="text" name="note" placeholder="بۆ نموونە، کڕیاری ئاسایی">
+      <button type="button" class="btn" onclick="addRow()">+ زیادکردنی کاڵا</button>
+      <button type="submit" name="save" class="btn">پاشەکەوتکردن و کردنەوەی پسوڵە</button>
     </div>
 
     <table id="itemsTbl">
       <thead>
       <tr>
-        <th style="width:28%">Name of Item</th>
-        <th style="width:22%">Brand</th>
-        <th style="width:12%">Qty</th>
-        <th style="width:18%">Price</th>
-        <th style="width:18%">Price Line</th>
-        <th style="width:12%">Actions</th>
+        <th style="width:28%">ناوی کاڵا</th>
+        <th style="width:22%">براند</th>
+        <th style="width:12%">بڕ</th>
+        <th style="width:18%">نرخ</th>
+        <th style="width:18%">کۆی نرخ</th>
+        <th style="width:12%">کردارەکان</th>
       </tr>
       </thead>
       <tbody id="itemsBody">
@@ -117,15 +117,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save'])) {
 </div>
 
 <div class="form-row" style="justify-content: flex-end; margin-top: 1rem;">
-  <span class="badge">Total: <strong id="total">0.00</strong></span>
+  <span class="badge">کۆی گشتی: <strong id="total">0.00</strong></span>
 </div>
 
 <script>
 const itemsTbody = document.getElementById('itemsBody');
 const totalEl = document.getElementById('total');
 
-function money(n){ 
-  return (Math.round((n + Number.EPSILON) * 100) / 100).toFixed(2); 
+function money(n){
+  return (Math.round((n + Number.EPSILON) * 100) / 100).toFixed(2);
 }
 
 function recalcRow(tr){
@@ -149,17 +149,17 @@ function recalcAll(){
 
 function attachRowHandlers(tr){
   tr.querySelectorAll('input[name="qty[]"], input[name="price[]"]').forEach(inp => {
-    inp.addEventListener('input', () => { 
-      recalcRow(tr); 
-      recalcAll(); 
+    inp.addEventListener('input', () => {
+      recalcRow(tr);
+      recalcAll();
     });
   });
 
   tr.querySelector('.addRow')?.addEventListener('click', addRow);
-  
+
   tr.querySelector('.removeRow')?.addEventListener('click', () => {
     if (itemsTbody.querySelectorAll('tr').length > 1){
-      tr.remove(); 
+      tr.remove();
       recalcAll();
     }
   });
@@ -168,14 +168,14 @@ function attachRowHandlers(tr){
 function addRow(){
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td><input type="text" name="item_name[]" placeholder="e.g., Notebook A5" required></td>
-    <td><input type="text" name="brand[]" placeholder="e.g., Moleskine"></td>
+    <td><input type="text" name="item_name[]" placeholder="بۆ نموونە، تێنووسی A5" required></td>
+    <td><input type="text" name="brand[]" placeholder="بۆ نموونە، مۆڵسکین"></td>
     <td><input type="number" name="qty[]" min="1" step="1" value="1" required></td>
     <td><input type="number" name="price[]" min="0" step="0.01" value="0.00" required></td>
     <td><input type="text" class="line_total" value="0.00" readonly></td>
     <td class="row-actions">
-      <button type="button" class="btn btn-secondary btn-small addRow">+ Add</button>
-      <button type="button" class="btn btn-warning btn-small removeRow">Remove</button>
+      <button type="button" class="btn btn-secondary btn-small addRow">+ زیادکردن</button>
+      <button type="button" class="btn btn-warning btn-small removeRow">سڕینەوە</button>
     </td>`;
   itemsTbody.appendChild(tr);
   attachRowHandlers(tr);
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<?php 
+<?php
 // Include the standard layout footer
-require 'footer.php'; 
+require 'footer.php';
 ?>
