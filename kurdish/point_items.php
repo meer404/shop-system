@@ -4,7 +4,7 @@ require_once 'header.php';
 require_once  '../inc/auth.php';
 require_once '../inc/config.php';
 
-$page_title = "Point Items";
+$page_title = "کاڵاکانی خاڵ";
 $msg = null;
 $error = null;
 
@@ -15,14 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_item'])) {
     $points = (float)($_POST['points'] ?? 0);
 
     if (empty($name) || $price < 0 || $points < 0) {
-        $error = "Name is required, and price/points cannot be negative.";
+        $error = "ناو پێویستە، و نرخ/خاڵەکان نابێت نەرێنی بن.";
     } else {
         try {
             $stmt = $pdo->prepare("INSERT INTO point_items (name, price, points) VALUES (?, ?, ?)");
             $stmt->execute([$name, $price, $points]);
-            $msg = "Item '$name' saved successfully.";
+            $msg = "کاڵای '$name' بە سەرکەوتوویی پاشەکەوت کرا.";
         } catch (Throwable $e) {
-            $error = "Error saving item: " . $e->getMessage();
+            $error = "هەڵە لە پاشەکەوتکردنی کاڵا: " . $e->getMessage();
         }
     }
 }
@@ -31,45 +31,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_item'])) {
 $items = $pdo->query("SELECT * FROM point_items ORDER BY name ASC")->fetchAll();
 ?>
 <div class="card">
-    <h2>Add Point Item</h2>
+    <h2>زیادکردنی کاڵای خاڵ</h2>
     <?php if ($msg): ?><p class="success"><?= htmlspecialchars($msg) ?></p><?php endif; ?>
     <?php if ($error): ?><p class="danger"><?= htmlspecialchars($error) ?></p><?php endif; ?>
-    
+
     <form method="post" action="point_items.php">
         <div class="form-row">
             <div style="flex:2;">
-                <label for="name">Item Name</label>
-                <input type="text" id="name" name="name" placeholder="e.g., Coffee Mug" required>
+                <label for="name">ناوی کاڵا</label>
+                <input type="text" id="name" name="name" placeholder="بۆ نموونە، کوپی قاوە" required>
             </div>
             <div style="flex:1;">
-                <label for="price">Price</label>
+                <label for="price">نرخ</label>
                 <input type="number" id="price" name="price" min="0" step="0.01" value="0.00" required>
             </div>
             <div style="flex:1;">
-                <label for="points">Points</label>
+                <label for="points">خاڵەکان</label>
                 <input type="number" id="points" name="points" min="0" step="0.01" value="0.00" required>
             </div>
-            <button type="submit" name="save_item">Save Item</button>
+            <button type="submit" name="save_item">پاشەکەوتکردنی کاڵا</button>
         </div>
     </form>
 </div>
 
 <div class="card">
-    <h3>All Point Items</h3>
+    <h3>هەموو کاڵاکانی خاڵ</h3>
     <div class="table-wrap">
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Price</th>
-                    <th>Points</th>
-                    <th>Created At</th>
+                    <th>ناسنامە</th>
+                    <th>ناو</th>
+                    <th>نرخ</th>
+                    <th>خاڵەکان</th>
+                    <th>کاتی دروستکردن</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (!$items): ?>
-                    <tr><td colspan="5" style="text-align:center;">No items found. Add one above.</td></tr>
+                    <tr><td colspan="5" style="text-align:center;">هیچ کاڵایەک نەدۆزرایەوە. لە سەرەوە یەکێک زیاد بکە.</td></tr>
                 <?php else: foreach ($items as $item): ?>
                     <tr>
                         <td><?= (int)$item['id'] ?></td>
